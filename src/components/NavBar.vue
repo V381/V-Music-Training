@@ -6,12 +6,29 @@
       <div class="nav-links">
         <router-link to="/">Tools</router-link>
         <router-link to="/contact">Contact</router-link>
+        <a href="#" @click.prevent="handleLogout">Logout</a>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
+import { auth } from '@/config/firebase'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  try {
+    await auth.signOut()
+    authStore.setAuth(false)
+    router.push('/login')
+  } catch (error) {
+    console.error('Error logging out:', error)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
