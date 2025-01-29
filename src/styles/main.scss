@@ -1,0 +1,172 @@
+@import 'variables';
+@import 'mixins';
+// Reset & Base styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-sans;
+  background-color: $custom-dark;
+  color: white;
+  min-height: 100vh;
+}
+
+// Navigation
+.nav {
+  background-color: $zinc-900;
+  padding: 1rem;
+
+  &__container {
+    @include container;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__logo {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    
+    &:hover {
+      color: $custom-red;
+      @include hover-transition;
+    }
+  }
+
+  &__links {
+    display: flex;
+    gap: 1rem;
+
+    a {
+      color: white;
+      text-decoration: none;
+      
+      &:hover {
+        color: $custom-red;
+        @include hover-transition;
+      }
+    }
+  }
+}
+
+// Header
+.header {
+  background-color: $custom-red;
+  text-align: center;
+  padding: 3rem 1rem;
+  position: relative;
+
+  &__content {
+    position: relative;
+    z-index: 10;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    font-family: $font-heading;
+  }
+
+  p {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Main content
+.main {
+  padding: 3rem 1rem;
+
+  &__container {
+    @include container;
+  }
+}
+
+// Cards
+.card {
+  background-color: $zinc-900;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  
+  @include hover-transition;
+  
+  &:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 10px 15px -3px rgba($custom-red, 0.2);
+  }
+
+  &__icon {
+    font-size: 3rem;
+    color: $custom-red;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+  }
+
+  &__text {
+    color: $gray-300;
+    margin-bottom: 1rem;
+  }
+
+  &__button {
+    display: inline-block;
+    background-color: $custom-red;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    
+    &:hover {
+      background-color: darken($custom-red, 10%);
+      @include hover-transition;
+    }
+  }
+}
+
+// Footer
+.footer {
+  background-color: $zinc-900;
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+
+  &__content {
+    @include container;
+  }
+
+  &__copyright {
+    color: $gray-400;
+  }
+
+  &__links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    a {
+      color: $gray-400;
+      text-decoration: none;
+      
+      &:hover {
+        color: $custom-red;
+        @include hover-transition;
+      }
+    }
+  }
+}
