@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Music Learning Tools - Free Online Music Practice Tools & Training Games
+    </title>
+
+    <!-- Primary Meta Tags -->
+    <meta
+      name="description"
+      content="Free interactive music learning tools: Piano trainer, guitar fretboard guide, ear training, rhythm exercises, metronome & note reading practice. Perfect for beginners and music students."
+    />
+    <meta
+      name="keywords"
+      content="music learning tools, online piano trainer, guitar fretboard trainer, ear training exercises, rhythm practice, music theory games, free music tools, learn music online, music practice software, beginner music lessons"
+    />
+    <meta name="author" content="Music Learning Tools" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Music Learning Tools",
+        "description": "Free online music learning tools for beginners and students",
+        "applicationCategory": "EducationalApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Piano Note Training",
+          "Guitar Fretboard Learning",
+          "Ear Training",
+          "Rhythm Practice",
+          "Metronome",
+          "Note Reading Practice"
+        ],
+        "author": {
+          "@type": "Person",
+          "name": "Music Learning Tools"
+        }
+      }
+    </script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "custom-dark": "#191919",
+              "custom-red": "#c41e3a",
+            },
+            fontFamily: {
+              heading: ["Poppins", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+
+  <body class="bg-custom-dark text-white font-sans min-h-screen">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only"
+      >Skip to main content</a
+    >
+
+    <nav class="bg-zinc-900 p-4" role="navigation" aria-label="Main navigation">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="text-xl font-bold">
+          <a href="/" aria-label="Music Learning Tools Home"
+            >Music Learning Tools</a
+          >
+        </div>
+        <div class="space-x-4">
+          <a href="#tools" class="hover:text-custom-red transition">Tools</a>
+          <a href="./contact.html" class="hover:text-custom-red transition"
+            >Contact</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <header class="bg-custom-red text-center py-12 px-4 relative">
+      <div id="particles-js" class="absolute inset-0" aria-hidden="true"></div>
+      <div class="relative z-10">
+        <h1 class="text-4xl font-bold mb-4 font-heading">
+          Start Your Music Journey Here
+        </h1>
+        <p class="max-w-2xl mx-auto text-lg mb-6">
+          Free online tools to help you learn music at your own pace. Perfect
+          for beginners and students who want to improve their musical skills.
+        </p>
+        <div class="text-sm opacity-80 max-w-2xl mx-auto">
+          Learn Notes • Practice Guitar • Keep Time • Train Your Ears
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="py-12">
+      <article
+        class="bg-zinc-900 rounded-xl p-6 text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-red-500/20 border border-zinc-800"
+      >
+        <i
+          class="fas fa-music text-5xl text-custom-red mb-4"
+          aria-hidden="true"
+        ></i>
+        <h3 class="text-xl font-heading font-bold mb-3">Note Learning Tool</h3>
+        <p class="text-gray-300 mb-4">
+          Master music note reading with interactive exercises. Perfect for
+          beginners learning to read sheet music and understand musical
+          notation. Practice treble and bass clefs at your own pace.
+        </p>
+        <a
+          href="http://v381.github.io/Music_Trainer/html.html"
+          class="inline-block bg-custom-red px-6 py-2 rounded hover:bg-red-700 transition duration-300"
+          aria-label="Start learning music notes"
+        >
+          Start Learning
+        </a>
+      </article>
+
+      <!-- Guitar Notes Guide -->
+      <article
+        class="bg-zinc-900 rounded-xl p-6 text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-red-500/20 border border-zinc-800"
+      >
+        <i
+          class="fas fa-guitar text-5xl text-custom-red mb-4"
+          aria-hidden="true"
+        ></i>
+        <h3 class="text-xl font-heading font-bold mb-3">Guitar Notes Guide</h3>
+        <p class="text-gray-300 mb-4">
+          Interactive fretboard training to help you memorize notes on your
+          guitar. Learn scales, chords, and improve your playing confidence with
+          our visual fretboard guide.
+        </p>
+        <a
+          href="https://v381.github.io/Guitar_Fretboard_Note_Trainer/"
+          class="inline-block bg-custom-red px-6 py-2 rounded hover:bg-red-700 transition duration-300"
+          aria-label="Start learning guitar notes"
+        >
+          Start Learning
+        </a>
+      </article>
+
+      <!-- Simple Metronome -->
+      <article
+        class="bg-zinc-900 rounded-xl p-6 text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-red-500/20 border border-zinc-800"
+      >
+        <i
+          class="fas fa-clock text-5xl text-custom-red mb-4"
+          aria-hidden="true"
+        ></i>
+        <h3 class="text-xl font-heading font-bold mb-3">Simple Metronome</h3>
+        <p class="text-gray-300 mb-4">
+          Practice your timing with our easy-to-use online metronome. Adjust
+          tempo, time signatures, and develop a solid sense of rhythm. Essential
+          for all musicians.
+        </p>
+        <a
+          href="http://v381.github.io/Metronome/html.html"
+          class="inline-block bg-custom-red px-6 py-2 rounded hover:bg-red-700 transition duration-300"
+          aria-label="Start practicing with metronome"
+        >
+          Start Practice
+        </a>
+      </article>
+
+      <!-- Ear Training Guide -->
+      <article
+        class="bg-zinc-900 rounded-xl p-6 text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-red-500/20 border border-zinc-800"
+      >
+        <i
+          class="fas fa-headphones text-5xl text-custom-red mb-4"
+          aria-hidden="true"
+        ></i>
+        <h3 class="text-xl font-heading font-bold mb-3">Ear Training Guide</h3>
+        <p class="text-gray-300 mb-4">
+          Develop your musical ear with interactive exercises. Train yourself to
+          recognize intervals, chords, and scales. Perfect for musicians wanting
+          to improve their aural skills.
+        </p>
+        <a
+          href="https://v381.github.io/V-Ear-Training/"
+          class="inline-block bg-custom-red px-6 py-2 rounded hover:bg-red-700 transition duration-300"
+          aria-label="Start ear training exercises"
+        >
+          Start Training
+        </a>
+      </article>
+
+      <!-- Piano Note Trainer -->
+      <article
+        class="bg-zinc-900 rounded-xl p-6 text-center transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-red-500/20 border border-zinc-800"
+      >
+        <i
+          class="fas fa-keyboard text-5xl text-custom-red mb-4"
+          aria-hidden="true"
+        ></i>
+        <h3 class="text-xl font-heading font-bold mb-3">Piano Note Trainer</h3>
+        <p class="text-gray-300 mb-4">
+          Learn piano notes and keyboard positions with interactive exercises.
+          Master key signatures, chord progressions, and scales through engaging
+          practice sessions.
+        </p>
+        <a
+          href="https://v381.github.io/Piano_Note_Trainer/"
+          class="inline-block bg-custom-red px-6 py-2 rounded hover:bg-red-700 transition duration-300"
+          aria-label="Start piano note training"
+        >
+          Start Learning
+        </a>
+      </article>
+
+      <!-- New Features Section -->
+      <section class="mt-16 px-4" aria-labelledby="features-heading">
+        <h2 id="features-heading" class="text-3xl font-bold text-center mb-8">
+          Why Choose Our Tools
+        </h2>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <i
+              class="fas fa-laptop text-4xl text-custom-red mb-4"
+              aria-hidden="true"
+            ></i>
+            <h3 class="text-xl font-bold mb-2">Free & Online</h3>
+            <p>
+              Access all tools from any device, completely free. No registration
+              required.
+            </p>
+          </div>
+          <div class="text-center">
+            <i
+              class="fas fa-graduation-cap text-4xl text-custom-red mb-4"
+              aria-hidden="true"
+            ></i>
+            <h3 class="text-xl font-bold mb-2">Learn at Your Pace</h3>
+            <p>
+              Practice whenever you want, as much as you need. Track your
+              progress over time.
+            </p>
+          </div>
+          <div class="text-center">
+            <i
+              class="fas fa-users text-4xl text-custom-red mb-4"
+              aria-hidden="true"
+            ></i>
+            <h3 class="text-xl font-bold mb-2">Community Driven</h3>
+            <p>
+              Join our growing community of music learners. Share your progress
+              and get support.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-zinc-900 text-center py-8 mt-12" role="contentinfo">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left">
+          <div>
+            <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+            <ul>
+              <li>
+                <a href="#tools" class="text-gray-400 hover:text-custom-red"
+                  >All Tools</a
+                >
+              </li>
+              <li>
+                <a
+                  href="./contact.html"
+                  class="text-gray-400 hover:text-custom-red"
+                  >Contact</a
+                >
+              </li>
+              <li>
+                <a href="/privacy" class="text-gray-400 hover:text-custom-red"
+                  >Privacy Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Popular Tools</h3>
+            <ul>
+              <li>
+                <a
+                  href="http://v381.github.io/Music_Trainer/html.html"
+                  class="text-gray-400 hover:text-custom-red"
+                  >Note Trainer</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://v381.github.io/Guitar_Fretboard_Note_Trainer/"
+                  class="text-gray-400 hover:text-custom-red"
+                  >Guitar Notes</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://v381.github.io/V-Ear-Training/"
+                  class="text-gray-400 hover:text-custom-red"
+                  >Ear Training</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Connect</h3>
+            <ul>
+              <li>
+                <a
+                  href="https://github.com/v381"
+                  class="text-gray-400 hover:text-custom-red"
+                  >GitHub</a
+                >
+              </li>
+              <li>
+                <a
+                  href="./contact.html"
+                  class="text-gray-400 hover:text-custom-red"
+                  >Contact Us</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="text-gray-400">
+          © 2025 Music Learning Tools - Free Online Music Practice
+        </p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
