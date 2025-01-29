@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { auth } from '@/components/config/firebase'
+import { auth } from '../config/firebase';
 import IndexView from '../views/IndexView.vue'
 import ContactView from '../views/ContactView.vue'
 import LoginView from '../views/LoginView.vue'
