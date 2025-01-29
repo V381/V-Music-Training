@@ -19,4 +19,4 @@ onMounted(() => {
     authStore.setAuth(!!user)
   })
 })
-</script>
+</script>./components/config/firebase
