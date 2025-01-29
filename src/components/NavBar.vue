@@ -1,10 +1,11 @@
 <template>
-  <nav class="main-nav">
+  <nav class="main-nav" v-if="authStore.isAuthenticated">
     <div class="container">
       <router-link to="/" class="logo">Music Learning Tools</router-link>
 
       <div class="nav-links">
         <router-link to="/">Tools</router-link>
+        <router-link to="/dashboard">Dashboard</router-link>
         <router-link to="/contact">Contact</router-link>
         <a href="#" @click.prevent="handleLogout">Logout</a>
       </div>
