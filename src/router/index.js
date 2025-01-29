@@ -3,6 +3,13 @@ import { auth } from '../config/firebase'
 import IndexView from '../views/IndexView.vue'
 import ContactView from '../views/ContactView.vue'
 import LoginView from '../views/LoginView.vue'
+import DashboardView from '../views/DashboardView.vue'
+
+let authReady = false
+
+auth.onAuthStateChanged(() => {
+  authReady = true
+})
 
 const routes = [
   {
@@ -21,6 +28,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView,
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -29,11 +42,20 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const currentUser = auth.currentUser
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+router.beforeEach(async (to, from, next) => {
+  if (!authReady) {
+    await new Promise(resolve => {
+      const unsubscribe = auth.onAuthStateChanged(() => {
+        unsubscribe()
+        resolve()
+      })
+    })
+  }
 
-  if (requiresAuth && !currentUser) {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isAuthenticated = auth.currentUser
+
+  if (requiresAuth && !isAuthenticated) {
     next('/login')
   } else {
     next()

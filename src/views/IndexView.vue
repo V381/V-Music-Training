@@ -18,50 +18,46 @@
             <i class="fas fa-music"></i>
             <h3>Note Learning Tool</h3>
             <p>Master music note reading with interactive exercises. Perfect for beginners learning to read sheet music.</p>
-            <a href="http://v381.github.io/Music_Trainer/html.html" class="btn">Start Learning</a>
+            <a @click="startToolPractice('Note Learning', 'http://v381.github.io/Music_Trainer/html.html')" class="btn">Start Learning</a>
           </article>
 
           <article class="tool-card">
             <i class="fas fa-guitar"></i>
             <h3>Guitar Notes Guide</h3>
             <p>Interactive fretboard training to help you memorize notes on your guitar.</p>
-            <a href="https://v381.github.io/Guitar_Fretboard_Note_Trainer/" class="btn">Start Learning</a>
+            <a @click="startToolPractice('Guitar Notes', 'https://v381.github.io/Guitar_Fretboard_Note_Trainer/')" class="btn">Start Learning</a>
           </article>
 
           <article class="tool-card">
             <i class="fas fa-clock"></i>
             <h3>Simple Metronome</h3>
             <p>Practice your timing with our easy-to-use online metronome.</p>
-            <a href="http://v381.github.io/Metronome/html.html" class="btn">Start Practice</a>
+            <a @click="startToolPractice('Metronome', 'http://v381.github.io/Metronome/html.html')" class="btn">Start Practice</a>
           </article>
 
           <article class="tool-card">
             <i class="fas fa-headphones"></i>
             <h3>Ear Training</h3>
             <p>Develop your musical ear with interactive exercises. Train yourself to recognize intervals, chords, and scales.</p>
-            <a href="https://v381.github.io/V-Ear-Training/" class="btn">Start Practice</a>
+            <a @click="startToolPractice('Ear Training', 'https://v381.github.io/V-Ear-Training/')" class="btn">Start Practice</a>
           </article>
-      <article
-        class="tool-card"
-      >
-      <i class="fas fa-keyboard"></i>
-        <h3>Piano Note Trainer</h3>
-        <p >
-          Learn piano notes and keyboard positions with interactive exercises.
-          Master key signatures, chord progressions, and scales through engaging
-          practice sessions.
-        </p>
-        <a
-          href="https://v381.github.io/Piano_Note_Trainer/"
-          aria-label="Start piano note training"
-          class="btn"
-        >
-          Start Learning
-        </a>
-      </article>
+
+          <article class="tool-card">
+            <i class="fas fa-keyboard"></i>
+            <h3>Piano Note Trainer</h3>
+            <p>Learn piano notes and keyboard positions with interactive exercises. Master key signatures, chord progressions, and scales through engaging practice sessions.</p>
+            <a @click="startToolPractice('Piano Notes', 'https://v381.github.io/Piano_Note_Trainer/')" class="btn">Start Learning</a>
+          </article>
         </div>
       </div>
     </main>
+
+    <PracticeModal
+      v-model:show="showPracticeModal"
+      :tool-name="currentTool"
+      @save="handlePracticeComplete"
+      @close="handleModalClose"
+    />
 
     <footer class="main-footer">
       <div class="container">
@@ -76,43 +72,183 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { particlesConfig } from '../config/particlesConfig'
+import { usePracticeTracking } from '../composables/userPracticeTracking'
+import PracticeModal from '../components/PracticeModal.vue'
+
+const showPracticeModal = ref(false)
+const currentTool = ref('')
+const { startPractice, endPractice } = usePracticeTracking()
 
 onMounted(() => {
   if (window.particlesJS) {
     window.particlesJS('particles-js', particlesConfig)
   }
+
+  // Check if there's an unfinished practice session
+  const savedTool = sessionStorage.getItem('currentPracticeTool')
+  if (savedTool) {
+    currentTool.value = savedTool
+    showPracticeModal.value = true
+  }
+})
+
+const startToolPractice = (toolName, url) => {
+  startPractice(toolName)
+  currentTool.value = toolName
+  sessionStorage.setItem('currentPracticeTool', toolName)
+  window.open(url, '_blank')
+}
+
+const handlePracticeComplete = async (data) => {
+  await endPractice({
+    rating: data.rating,
+    notes: data.notes
+  })
+  sessionStorage.removeItem('currentPracticeTool')
+  showPracticeModal.value = false
+  currentTool.value = ''
+}
+
+const handleModalClose = () => {
+  sessionStorage.removeItem('currentPracticeTool')
+  showPracticeModal.value = false
+  currentTool.value = ''
+}
+
+onBeforeUnmount(() => {
+  const savedTool = sessionStorage.getItem('currentPracticeTool')
+  if (savedTool) {
+    handlePracticeComplete({ rating: 0, notes: 'Session ended without feedback' })
+  }
 })
 </script>
 
 <style lang="scss" scoped>
-  .page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hero {
+  background: #c41e3a;
+  color: white;
+  text-align: center;
+  padding: 60px 0;
+  position: relative;
 
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    position: relative;
+    z-index: 1;
   }
 
-  .main-nav {
-    background: #18181B;
-    padding: 16px 0;
+  h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
 
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+  p {
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto 20px;
+  }
+
+  .features {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding: 60px 0;
+}
+
+.tool-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.tool-card {
+  background: #18181B;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  i {
+    font-size: 48px;
+    color: #c41e3a;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  p {
+    color: #D1D5DB;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    display: inline-block;
+    background: #c41e3a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: darken(#c41e3a, 10%);
     }
+  }
+}
 
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-      color: white;
+.main-footer {
+  background: #18181B;
+  padding: 30px 0;
+  text-align: center;
+
+  p {
+    color: #9CA3AF;
+    margin-bottom: 15px;
+  }
+
+  .footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+
+    a {
+      color: #9CA3AF;
       text-decoration: none;
 
       &:hover {
@@ -120,156 +256,22 @@ onMounted(() => {
         transition: color 0.3s ease;
       }
     }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-
-      a {
-        color: white;
-        text-decoration: none;
-
-        &:hover {
-          color: #c41e3a;
-          transition: color 0.3s ease;
-        }
-      }
-    }
   }
+}
 
+@media (max-width: 768px) {
   .hero {
-    background: #c41e3a;
-    color: white;
-    text-align: center;
-    padding: 60px 0;
-    position: relative;
-
-    .container {
-      position: relative;
-      z-index: 1;
-    }
-
     h1 {
-      font-size: 40px;
-      margin-bottom: 20px;
-      font-weight: bold;
+      font-size: 32px;
     }
 
     p {
-      font-size: 18px;
-      max-width: 800px;
-      margin: 0 auto 20px;
+      font-size: 16px;
     }
-
-    .features {
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    .particles {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  .main-content {
-    flex: 1;
-    padding: 60px 0;
   }
 
   .tool-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
+    grid-template-columns: 1fr;
   }
-
-  .tool-card {
-    background: #18181B;
-    border-radius: 12px;
-    padding: 30px;
-    text-align: center;
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    &:hover {
-      transform: translateY(-5px);
-    }
-
-    i {
-      font-size: 48px;
-      color: #c41e3a;
-      margin-bottom: 20px;
-    }
-
-    h3 {
-      font-size: 24px;
-      margin-bottom: 15px;
-    }
-
-    p {
-      color: #D1D5DB;
-      margin-bottom: 20px;
-    }
-
-    .btn {
-      display: inline-block;
-      background: #c41e3a;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.3s ease;
-
-      &:hover {
-        background: darken(#c41e3a, 10%);
-      }
-    }
-  }
-
-  .main-footer {
-    background: #18181B;
-    padding: 30px 0;
-    text-align: center;
-
-    p {
-      color: #9CA3AF;
-      margin-bottom: 15px;
-    }
-
-    .footer-nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-
-      a {
-        color: #9CA3AF;
-        text-decoration: none;
-
-        &:hover {
-          color: #c41e3a;
-          transition: color 0.3s ease;
-        }
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      h1 {
-        font-size: 32px;
-      }
-
-      p {
-        font-size: 16px;
-      }
-    }
-
-    .tool-cards {
-      grid-template-columns: 1fr;
-    }
-  }
-  </style>
+}
+</style>

@@ -1,22 +1,30 @@
 <template>
   <div class="page">
-    <NavBar v-if="authStore.isAuthenticated"></NavBar>
-    <router-view></router-view>
+    <NavBar v-if="authStore.isAuthReady"/>
+    <router-view v-if="authStore.isAuthReady"></router-view>
+    <div v-else class="loading">Loading...</div>
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
-import { auth } from './config/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
 import NavBar from './components/NavBar.vue'
 
 const authStore = useAuthStore()
 
 onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
-    authStore.setAuth(!!user)
-  })
+  authStore.init()
 })
-</script>./components/config/firebase
+</script>
+
+<style scoped>
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2em;
+  color: #9CA3AF;
+}
+</style>
