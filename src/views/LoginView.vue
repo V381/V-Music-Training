@@ -23,10 +23,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider, githubProvider } from '@/config/firebase'
+import { auth, googleProvider, githubProvider } from '../config/firebase'
 import { useRouter } from 'vue-router'
-import { particlesConfig } from '@/config/particlesConfig'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '../stores/auth'
+import { particlesConfig } from '../config/particlesConfig'
+
 const authStore = useAuthStore()
 
 const error = ref('')

@@ -13,9 +13,9 @@
 </template>
 
 <script setup>
-import { auth } from '@/config/firebase'
+import { auth } from '../config/firebase'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()

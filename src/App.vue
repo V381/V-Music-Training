@@ -7,10 +7,10 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { auth } from '@/config/firebase'
+import { useAuthStore } from './stores/auth'
+import { auth } from './config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
-import NavBar from '@/components/NavBar.vue'
+import NavBar from './components/NavBar.vue'
 
 const authStore = useAuthStore()
 

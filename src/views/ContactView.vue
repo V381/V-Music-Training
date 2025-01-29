@@ -56,7 +56,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { particlesConfig } from '@/config/particlesConfig.js'
+import { particlesConfig } from '../config/particlesConfig'
 
 onMounted(() => {
   if (window.particlesJS) {
