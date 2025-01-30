@@ -10,7 +10,7 @@
     />
     <NotificationSystem />
     <router-view v-if="authStore.isAuthReady"></router-view>
-    <div v-else class="loading">Loading...</div>
+      <LoadingSpinner v-else text="Loading..." />
   </div>
 </template>
 
@@ -19,7 +19,7 @@ import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import NavBar from './components/NavBar.vue'
 import PracticeModal from './components/PracticeModal.vue'
-
+import LoadingSpinner from './components/LoadingSpinner.vue'
 const authStore = useAuthStore()
 
 onMounted(() => {
