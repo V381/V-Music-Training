@@ -1,9 +1,7 @@
 <template>
     <div class="history-section">
       <h2>Practice History</h2>
-      <div v-if="practiceStore.isLoading" class="loading">
-        Loading history...
-      </div>
+      <LoadingSpinner v-if="practiceStore.isLoading" text="Loading history..." />
       <div v-else-if="practiceStore.error" class="error">
         {{ practiceStore.error }}
       </div>
@@ -32,6 +30,7 @@
 import { onMounted, watch } from 'vue'
 import { usePracticeStore } from '../../stores/practice'
 import { auth } from '../../config/firebase'
+import LoadingSpinner from '../../components/LoadingSpinner.vue'
 
 const practiceStore = usePracticeStore()
 
