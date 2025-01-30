@@ -77,7 +77,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-- Project Link: 
+- Project Link: https://v-music-training.vercel.app/
 - For questions and support: paavlee@yahoo.com
 
 ## Acknowledgments
