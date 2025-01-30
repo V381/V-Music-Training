@@ -1,6 +1,6 @@
 <template>
     <div class="region-selector">
-      <h3>Select Your Region</h3>
+      <h3>Change Your Region</h3>
       <select v-model="selectedRegion" @change="updateRegion">
         <option value="">Global</option>
         <option v-for="region in regions" :key="region.code" :value="region.code">
