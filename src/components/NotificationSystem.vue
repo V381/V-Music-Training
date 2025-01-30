@@ -19,8 +19,7 @@
 
 <script setup>
 
-import { useNotificationStore } from '@/stores/notifications'
-
+import { useNotificationStore } from '../stores/notification'
 const notificationStore = useNotificationStore()
 </script>
 

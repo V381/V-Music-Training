@@ -17,6 +17,44 @@ export const useGoalStore = defineStore('goals', () => {
   const isLoading = ref(false)
   const error = ref(null)
 
+  const challengeTypes = {
+    noteReading: {
+      title: 'Note Reading Sprint',
+      description: 'Identify 20 notes correctly in under 5 minutes',
+      toolName: 'Note Learning Tool',
+      targetMinutes: 5,
+      frequency: 'daily'
+    },
+    rhythmMaster: {
+      title: 'Rhythm Master',
+      description: 'Practice with the metronome for 15 minutes',
+      toolName: 'Metronome',
+      targetMinutes: 15,
+      frequency: 'daily'
+    },
+    earTraining: {
+      title: 'Perfect Pitch',
+      description: 'Complete 10 ear training exercises',
+      toolName: 'Ear Training',
+      targetMinutes: 10,
+      frequency: 'daily'
+    },
+    guitarPractice: {
+      title: 'Fretboard Explorer',
+      description: 'Practice guitar note recognition for 20 minutes',
+      toolName: 'Guitar Notes',
+      targetMinutes: 20,
+      frequency: 'daily'
+    },
+    pianoPractice: {
+      title: 'Piano Master',
+      description: 'Complete piano exercises for 15 minutes',
+      toolName: 'Piano Notes',
+      targetMinutes: 15,
+      frequency: 'daily'
+    }
+  }
+
   const addGoal = async (goalData) => {
     if (!auth.currentUser) {
       throw new Error('No authenticated user')
@@ -30,7 +68,11 @@ export const useGoalStore = defineStore('goals', () => {
         frequency: goalData.frequency,
         startDate: new Date(),
         completed: false,
-        progress: 0
+        progress: 0,
+        isChallenge: goalData.isChallenge || false,
+        challengeId: goalData.challengeId || null,
+        challengeTitle: goalData.challengeTitle || null,
+        challengeDescription: goalData.challengeDescription || null
       })
 
       goals.value.push({
@@ -94,6 +136,8 @@ export const useGoalStore = defineStore('goals', () => {
         targetMinutes: parseInt(doc.data().targetMinutes),
         progress: parseInt(doc.data().progress || 0)
       }))
+
+      await checkAndGenerateChallenge()
     } catch (err) {
       console.error('Error fetching goals:', err)
       error.value = err.message
@@ -136,6 +180,48 @@ export const useGoalStore = defineStore('goals', () => {
     }
   }
 
+  const generateDailyChallenge = async () => {
+    if (!auth.currentUser) return
+
+    try {
+      const availableChallenges = Object.entries(challengeTypes)
+      const [id, challenge] = availableChallenges[Math.floor(Math.random() * availableChallenges.length)]
+
+      const challengeGoal = {
+        userId: auth.currentUser.uid,
+        toolName: challenge.toolName,
+        targetMinutes: challenge.targetMinutes,
+        frequency: 'daily',
+        isChallenge: true,
+        challengeId: id,
+        challengeTitle: challenge.title,
+        challengeDescription: challenge.description
+      }
+
+      await addGoal(challengeGoal)
+    } catch (err) {
+      console.error('Error generating daily challenge:', err)
+      error.value = err.message
+    }
+  }
+
+  const checkAndGenerateChallenge = async () => {
+    if (!goals.value.length) {
+      await generateDailyChallenge()
+      return
+    }
+
+    const todaysChallenges = goals.value.filter(
+      goal => goal.isChallenge &&
+      goal.frequency === 'daily' &&
+      new Date(goal.startDate).toDateString() === new Date().toDateString()
+    )
+
+    if (todaysChallenges.length === 0) {
+      await generateDailyChallenge()
+    }
+  }
+
   const resetDailyGoals = () => resetGoals('daily')
   const resetWeeklyGoals = () => resetGoals('weekly')
 
@@ -148,6 +234,9 @@ export const useGoalStore = defineStore('goals', () => {
     fetchUserGoals,
     deleteGoal,
     resetDailyGoals,
-    resetWeeklyGoals
+    resetWeeklyGoals,
+    generateDailyChallenge,
+    checkAndGenerateChallenge,
+    challengeTypes
   }
 })

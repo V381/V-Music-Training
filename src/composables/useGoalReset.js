@@ -22,6 +22,7 @@ export function useGoalReset () {
             startDate.getFullYear() !== currentDate.getFullYear()) {
           try {
             await goalStore.resetDailyGoals()
+            await goalStore.checkAndGenerateChallenge()
             notificationStore.addNotification('Daily goals have been reset for a new day', 'info')
             break
           } catch (error) {

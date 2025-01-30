@@ -12,18 +12,33 @@ export const useNotificationStore = defineStore('notification', () => {
       message,
       type
     })
+
+    // Automatically remove notification after 5 seconds
     setTimeout(() => {
       removeNotification(id)
     }, 5000)
+
+    // Limit the number of notifications shown
+    if (notifications.value.length > 5) {
+      notifications.value.shift()
+    }
   }
 
   const removeNotification = (id) => {
-    notifications.value = notifications.value.filter(n => n.id !== id)
+    const index = notifications.value.findIndex(n => n.id === id)
+    if (index !== -1) {
+      notifications.value.splice(index, 1)
+    }
+  }
+
+  const clearAllNotifications = () => {
+    notifications.value = []
   }
 
   return {
     notifications,
     addNotification,
-    removeNotification
+    removeNotification,
+    clearAllNotifications
   }
 })
