@@ -1,16 +1,19 @@
 import { ref } from 'vue'
 import { usePracticeStore } from '../stores/practice'
+import { useGoalStore } from '../stores/goals'
 
 export function usePracticeTracking () {
   const practiceStore = usePracticeStore()
+  const goalStore = useGoalStore()
   const startTime = ref(null)
   const interactions = ref(0)
   const currentTool = ref(null)
 
-  const startPractice = (toolName) => {
+  const startPractice = async (toolName) => {
     startTime.value = new Date()
     interactions.value = 0
     currentTool.value = toolName
+    await goalStore.fetchUserGoals()
   }
 
   const recordInteraction = () => {
@@ -31,7 +34,19 @@ export function usePracticeTracking () {
         ...additionalData
       })
 
-      // Reset tracking
+      const toolGoals = goalStore.goals.filter(
+        goal => goal.toolName === currentTool.value
+      )
+
+      for (const goal of toolGoals) {
+        const currentProgress = goal.progress || 0
+        const newProgress = currentProgress + duration
+
+        await goalStore.updateGoalProgress(goal.id, newProgress)
+      }
+
+      await goalStore.fetchUserGoals()
+
       startTime.value = null
       interactions.value = 0
       currentTool.value = null

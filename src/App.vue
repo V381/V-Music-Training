@@ -1,6 +1,14 @@
 <template>
   <div class="page">
     <NavBar v-if="authStore.isAuthReady"/>
+    <PracticeModal
+      v-if="showPracticeModal"
+      v-model:show="showPracticeModal"
+      :tool-name="currentTool"
+      @save="handlePracticeComplete"
+      @close="handleModalClose"
+    />
+    <NotificationSystem />
     <router-view v-if="authStore.isAuthReady"></router-view>
     <div v-else class="loading">Loading...</div>
   </div>
@@ -10,6 +18,7 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import NavBar from './components/NavBar.vue'
+import PracticeModal from './components/PracticeModal.vue'
 
 const authStore = useAuthStore()
 

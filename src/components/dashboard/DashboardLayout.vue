@@ -7,6 +7,7 @@
 
       <div class="dashboard-content">
         <DashboardStats />
+        <GoalSetting />
         <DashboardCharts />
         <DashboardHistory />
       </div>
@@ -17,6 +18,7 @@
 import DashboardStats from './DashboardStats.vue'
 import DashboardHistory from './DashboardHistory.vue'
 import DashboardCharts from './DashboardCharts.vue'
+import GoalSetting from '../GoalSettings.vue'
 </script>
 
   <style lang="scss" scoped>
