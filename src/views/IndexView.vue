@@ -18,7 +18,7 @@
             <i class="fas fa-music"></i>
             <h3>Note Learning Tool</h3>
             <p>Master music note reading with interactive exercises. Perfect for beginners learning to read sheet music.</p>
-            <a @click="startToolPractice('Note Learning', 'http://v381.github.io/Music_Trainer/html.html')" class="btn">Start Learning</a>
+            <a @click="startToolPractice('Note Learning Tool', 'http://v381.github.io/Music_Trainer/html.html')" class="btn">Start Learning</a>
           </article>
 
           <article class="tool-card">
@@ -98,6 +98,7 @@ const startToolPractice = (toolName, url) => {
   startPractice(toolName)
   currentTool.value = toolName
   sessionStorage.setItem('currentPracticeTool', toolName)
+  showPracticeModal.value = true
   window.open(url, '_blank')
 }
 
