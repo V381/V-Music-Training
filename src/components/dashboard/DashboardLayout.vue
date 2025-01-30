@@ -8,6 +8,8 @@
       <div class="dashboard-content">
         <DashboardStats />
         <LearningPaths />
+        <RewardsDisplay />
+        <DailyChallengeCard />
         <AssessmentCenter />
         <GoalSetting />
         <DashboardCharts />
@@ -25,7 +27,8 @@ import LearningPaths from '../LearningPaths.vue'
 import AssessmentCenter from '../AssessmentCenter.vue'
 import { onMounted } from 'vue'
 import { useLearningPathsStore } from '../../stores/learningPaths'
-
+import DailyChallengeCard from '../DailyChallengeCard'
+import RewardsDisplay from '../RewardsDisplay'
 const learningPathsStore = useLearningPathsStore()
 
 onMounted(async () => {
