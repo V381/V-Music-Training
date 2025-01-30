@@ -7,6 +7,8 @@
 
       <div class="dashboard-content">
         <DashboardStats />
+        <LearningPaths />
+        <AssessmentCenter />
         <GoalSetting />
         <DashboardCharts />
         <DashboardHistory />
@@ -19,6 +21,16 @@ import DashboardStats from './DashboardStats.vue'
 import DashboardHistory from './DashboardHistory.vue'
 import DashboardCharts from './DashboardCharts.vue'
 import GoalSetting from '../GoalSettings.vue'
+import LearningPaths from '../LearningPaths.vue'
+import AssessmentCenter from '../AssessmentCenter.vue'
+import { onMounted } from 'vue'
+import { useLearningPathsStore } from '../../stores/learningPaths'
+
+const learningPathsStore = useLearningPathsStore()
+
+onMounted(async () => {
+  await learningPathsStore.initializeUserProgress()
+})
 </script>
 
   <style lang="scss" scoped>
