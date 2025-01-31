@@ -36,6 +36,9 @@
                 {{ isSubmitting ? 'Sending...' : 'Send Invite' }}
               </button>
             </div>
+            <p v-if="userNotFoundError" class="error-message">
+             User with email {{ lastCheckedEmail }} not found
+            </p>
           </div>
 
           <div v-if="pendingInvites.length" class="pending-invites">
@@ -78,14 +81,28 @@ const groupStore = useGroupStore()
 const notificationStore = useNotificationStore()
 
 const email = ref('')
+const lastCheckedEmail = ref('')
 const isSubmitting = ref(false)
 const pendingInvites = ref([])
+const userNotFoundError = ref(false)
 
 const handleSubmit = async () => {
   if (isSubmitting.value) return
-
+  userNotFoundError.value = false
   try {
     isSubmitting.value = true
+    lastCheckedEmail.value = email.value
+    const userQuery = query(
+      collection(db, 'users'),
+      where('email', '==', email.value)
+    )
+    const userSnapshot = await getDocs(userQuery)
+
+    if (userSnapshot.empty) {
+      userNotFoundError.value = true
+      return
+    }
+
     await groupStore.inviteMember(props.group.id, email.value)
     notificationStore.addNotification('Invitation sent successfully', 'success')
     email.value = ''
@@ -374,4 +391,15 @@ onMounted(() => {
       }
     }
   }
+
+  .error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.email-input-wrapper {
+  margin-bottom: 4px;
+}
   </style>

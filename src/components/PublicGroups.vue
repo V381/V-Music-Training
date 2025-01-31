@@ -1,131 +1,59 @@
 <template>
-    <div class="practice-groups">
-      <div class="groups-header">
-        <h2>Practice Groups</h2>
-        <button
-          class="btn primary"
-          @click="showCreator = true"
-          v-if="!showCreator"
-        >
-          Create New Group
-        </button>
+    <div class="public-groups">
+      <div v-if="isLoading" class="loading-state">
+        <LoadingSpinner text="Loading public groups..." />
       </div>
 
-      <div v-if="groupStore.isLoading" class="loading-state">
-        <LoadingSpinner text="Loading groups..." />
-      </div>
-
-      <div v-else-if="groupStore.error" class="error-state">
-        <p>{{ groupStore.error }}</p>
-        <button class="btn secondary" @click="retryFetch">
-          Retry
-        </button>
-      </div>
-
-      <div v-else-if="!groupStore.groups.length" class="empty-state">
-        <p>You haven't joined any groups yet.</p>
-        <button class="btn primary" @click="showCreator = true">
-          Create Your First Group
-        </button>
+      <div v-else-if="publicGroups.length === 0" class="empty-state">
+        <p>No public groups available</p>
       </div>
 
       <div v-else class="groups-grid">
-        <div
-          v-for="group in groupStore.groups"
-          :key="group.id"
-          class="group-card"
+        <div v-for="group in publicGroups"
+             :key="group.id"
+             class="group-card"
         >
           <div class="group-header">
             <h3>{{ group.name }}</h3>
             <span class="member-count">
-              {{ group.memberDetails.length }} members
+              {{ group.memberDetails?.length || 0 }} members
             </span>
           </div>
 
           <p class="description">{{ group.description }}</p>
 
-          <div class="members-preview">
-    <div
-      v-for="member in group.memberDetails.slice(0, 3)"
-      :key="member.id"
-      class="member-avatar"
-    >
-      <img
-        v-if="member.photoURL"
-        :src="member.photoURL"
-        :alt="member.displayName"
-        @error="handleImageError($event, member)"
-      >
-      <div
-        v-else
-        class="avatar-placeholder"
-        :style="{ backgroundColor: getRandomColor(member.id) }"
-      >
-        {{ member.displayName ? member.displayName[0].toUpperCase() : '?' }}
-      </div>
-    </div>
-    <span v-if="group.memberDetails.length > 3" class="more-members">
-      +{{ group.memberDetails.length - 3 }}
-    </span>
-  </div>
-
-          <div class="group-stats">
-            <div class="stat">
-              <span class="label">Total Practice</span>
-              <span class="value">{{ formatTime(group.totalPracticeTime) }}</span>
+          <div class="members-preview" v-if="group.memberDetails?.length">
+            <div v-for="member in group.memberDetails.slice(0, 3)"
+                 :key="member.id"
+                 class="member-avatar"
+            >
+              <img v-if="member.photoURL"
+                   :src="member.photoURL"
+                   :alt="member.displayName"
+                   @error="handleImageError($event, member)"
+              >
+              <div v-else
+                   class="avatar-placeholder"
+                   :style="{ backgroundColor: getRandomColor(member.id) }"
+              >
+                {{ member.displayName ? member.displayName[0].toUpperCase() : '?' }}
+              </div>
             </div>
-            <div class="stat">
-              <span class="label">Last Active</span>
-              <span class="value">{{ formatDate(group.lastActive) }}</span>
-            </div>
+            <span v-if="group.memberDetails.length > 3" class="more-members">
+              +{{ group.memberDetails.length - 3 }}
+            </span>
           </div>
 
           <div class="group-actions">
-            <button
-              v-if="group.createdBy === currentUser?.uid"
-              class="btn danger"
-              @click.stop="confirmDeleteGroup(group)"
+            <button class="btn primary"
+                    @click="handleJoin(group)"
+                    :disabled="isJoining === group.id"
             >
-              Delete Group
-            </button>
-            <button
-              class="btn warning"
-              @click="confirmLeaveGroup(group)"
-              v-if="group.createdBy !== currentUser?.uid"
-            >
-              Leave Group
-            </button>
-            <button
-              class="btn secondary"
-              @click="showInviteModal(group)"
-              v-if="group.createdBy === currentUser?.uid"
-            >
-              Invite Member
-            </button>
-            <button
-              class="btn primary"
-              @click="startGroupPractice(group)"
-            >
-              Start Practice
+              {{ isJoining === group.id ? 'Joining...' : 'Join Group' }}
             </button>
           </div>
         </div>
       </div>
-
-      <!-- Group Creator Modal -->
-      <GroupCreator
-        v-if="showCreator"
-        @close="showCreator = false"
-        @created="handleGroupCreated"
-      />
-
-      <!-- Invite Modal -->
-      <InviteMemberModal
-        v-if="showInvite"
-        :group="selectedGroup"
-        @close="closeInviteModal"
-        @invited="handleMemberInvited"
-      />
     </div>
   </template>
 
@@ -133,27 +61,22 @@
 import { ref, onMounted, computed } from 'vue'
 import { useGroupStore } from '../stores/groups'
 import { useNotificationStore } from '../stores/notification'
-import { auth } from '../config/firebase'
 import LoadingSpinner from './LoadingSpinner.vue'
-import GroupCreator from './GroupCreator.vue'
-import InviteMemberModal from './InviteMemberModal.vue'
-import { useRouter } from 'vue-router'
+import { auth } from '../config/firebase'
 
-const router = useRouter()
 const groupStore = useGroupStore()
 const notificationStore = useNotificationStore()
-const showCreator = ref(false)
-const showInvite = ref(false)
-const selectedGroup = ref(null)
 
-const currentUser = computed(() => auth.currentUser)
+const allPublicGroups = ref([])
+const isLoading = ref(false)
+const isJoining = ref(null)
 
-const formatTime = (minutes) => {
-  if (minutes < 60) return `${minutes}m`
-  const hours = Math.floor(minutes / 60)
-  const remainingMinutes = minutes % 60
-  return `${hours}h ${remainingMinutes}m`
-}
+// Filter out groups where user is already a member
+const publicGroups = computed(() => {
+  return allPublicGroups.value.filter(group => {
+    return !group.members?.includes(auth.currentUser?.uid)
+  })
+})
 
 const getRandomColor = (userId) => {
   const colors = [
@@ -164,67 +87,6 @@ const getRandomColor = (userId) => {
   return colors[index % colors.length]
 }
 
-const startGroupPractice = async (group) => {
-  try {
-    const sessionId = await groupStore.startGroupSession({
-      groupId: group.id,
-      startTime: new Date(),
-      members: [auth.currentUser.uid]
-    })
-
-    router.push(`/groups/${group.id}/practice/${sessionId}`)
-  } catch (err) {
-    notificationStore.addNotification('Failed to start practice session', 'error')
-    console.error('Error starting practice:', err)
-  }
-}
-
-const formatDate = (timestamp) => {
-  if (!timestamp) return 'Never'
-
-  if (timestamp && typeof timestamp.toDate === 'function') {
-    return timestamp.toDate().toLocaleDateString()
-  }
-
-  if (timestamp instanceof Date) {
-    return timestamp.toLocaleDateString()
-  }
-
-  if (typeof timestamp === 'number') {
-    return new Date(timestamp).toLocaleDateString()
-  }
-
-  if (typeof timestamp === 'string') {
-    return new Date(timestamp).toLocaleDateString()
-  }
-
-  return 'Invalid date'
-}
-
-const retryFetch = () => {
-  groupStore.fetchGroups()
-}
-
-const showInviteModal = (group) => {
-  selectedGroup.value = group
-  showInvite.value = true
-}
-
-const closeInviteModal = () => {
-  showInvite.value = false
-  selectedGroup.value = null
-}
-
-const handleGroupCreated = () => {
-  showCreator.value = false
-  notificationStore.addNotification('Group created successfully!', 'success')
-}
-
-const handleMemberInvited = () => {
-  closeInviteModal()
-  notificationStore.addNotification('Invitation sent successfully!', 'success')
-}
-
 const handleImageError = (event, member) => {
   const div = document.createElement('div')
   div.className = 'avatar-placeholder'
@@ -233,40 +95,38 @@ const handleImageError = (event, member) => {
   event.target.parentNode.replaceChild(div, event.target)
 }
 
-const confirmDeleteGroup = async (group) => {
-  if (confirm(`Are you sure you want to delete the group "${group.name}"? This action cannot be undone.`)) {
-    try {
-      await groupStore.deleteGroup(group.id)
-      notificationStore.addNotification('Group deleted successfully', 'success')
-    } catch (err) {
-      notificationStore.addNotification('Failed to delete group', 'error')
-      console.error('Error deleting group:', err)
-    }
+const handleJoin = async (group) => {
+  isJoining.value = group.id
+  try {
+    await groupStore.joinGroup(group.id)
+    notificationStore.addNotification('Successfully joined group', 'success')
+    await loadPublicGroups()
+  } catch (err) {
+    notificationStore.addNotification('Failed to join group', 'error')
+    console.error('Error joining group:', err)
+  } finally {
+    isJoining.value = null
   }
 }
 
-const confirmLeaveGroup = async (group) => {
-  if (confirm(`Are you sure you want to leave "${group.name}"?`)) {
-    try {
-      await groupStore.leaveGroup(group.id)
-      notificationStore.addNotification('Successfully left the group', 'success')
-    } catch (err) {
-      if (err.message === 'Group creator cannot leave the group') {
-        notificationStore.addNotification('Group creator cannot leave the group', 'error')
-      } else {
-        notificationStore.addNotification('Failed to leave group', 'error')
-        console.error('Error leaving group:', err)
-      }
-    }
+const loadPublicGroups = async () => {
+  isLoading.value = true
+  try {
+    allPublicGroups.value = await groupStore.fetchPublicGroups()
+  } catch (err) {
+    console.error('Error loading public groups:', err)
+    notificationStore.addNotification('Failed to load public groups', 'error')
+  } finally {
+    isLoading.value = false
   }
 }
 
 onMounted(() => {
-  groupStore.fetchGroups()
+  loadPublicGroups()
 })
 </script>
-<style lang="scss" scoped>
-.practice-groups {
+  <style lang="scss" scoped>
+ .practice-groups {
   padding: 30px;
 
   .groups-header {
@@ -644,5 +504,4 @@ p {
     }
   }
 }
-
-</style>
+  </style>

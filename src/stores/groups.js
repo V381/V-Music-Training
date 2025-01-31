@@ -130,16 +130,49 @@ export const useGroupStore = defineStore('groups', () => {
     if (!auth.currentUser) return
 
     try {
+      // First check if user exists
+      const userQuery = query(
+        collection(db, 'users'),
+        where('email', '==', email)
+      )
+      const userSnapshot = await getDocs(userQuery)
+
+      if (userSnapshot.empty) {
+        throw new Error('No user found with this email address')
+      }
+
+      // Check if user is already a member
+      const groupDoc = await getDoc(doc(db, 'practice_groups', groupId))
+      const groupData = groupDoc.data()
+
+      const userId = userSnapshot.docs[0].id
+      if (groupData.members.includes(userId)) {
+        throw new Error('User is already a member of this group')
+      }
+
+      // Check if there's already a pending invite
+      const existingInviteQuery = query(
+        collection(db, 'group_invites'),
+        where('groupId', '==', groupId),
+        where('email', '==', email),
+        where('status', '==', 'pending')
+      )
+      const existingInviteSnapshot = await getDocs(existingInviteQuery)
+
+      if (!existingInviteSnapshot.empty) {
+        throw new Error('An invitation is already pending for this email')
+      }
+
+      // Create the invite
       await addDoc(collection(db, 'group_invites'), {
         groupId,
         email,
-        status: 'pending',
         createdBy: auth.currentUser.uid,
-        createdAt: serverTimestamp(),
-        type: 'group_invitation'
+        createdAt: new Date(),
+        status: 'pending'
       })
     } catch (err) {
-      console.error('Error inviting member:', err)
+      console.error('Error in inviteMember:', err)
       throw err
     }
   }
@@ -159,10 +192,8 @@ export const useGroupStore = defineStore('groups', () => {
     try {
       const groupRef = doc(db, 'practice_groups', groupId)
       await updateDoc(groupRef, {
-        members: arrayUnion(auth.currentUser.uid),
-        lastActive: serverTimestamp()
+        members: arrayUnion(auth.currentUser.uid)
       })
-      await fetchGroups()
     } catch (err) {
       console.error('Error joining group:', err)
       throw err
@@ -174,23 +205,57 @@ export const useGroupStore = defineStore('groups', () => {
 
     try {
       const groupRef = doc(db, 'practice_groups', groupId)
+      const groupDoc = await getDoc(groupRef)
+
+      if (!groupDoc.exists()) {
+        throw new Error('Group not found')
+      }
+
+      const groupData = groupDoc.data()
+
+      if (groupData.createdBy === auth.currentUser.uid) {
+        throw new Error('Group creator cannot leave the group')
+      }
+
       await updateDoc(groupRef, {
-        members: arrayRemove(auth.currentUser.uid),
-        lastActive: serverTimestamp()
+        members: arrayRemove(auth.currentUser.uid)
       })
-      groups.value = groups.value.filter(g => g.id !== groupId)
+
+      const index = groups.value.findIndex(g => g.id === groupId)
+      if (index !== -1) {
+        groups.value.splice(index, 1)
+      }
+
+      return true
     } catch (err) {
-      console.error('Error leaving group:', err)
+      error.value = err.message
       throw err
     }
   }
 
   const deleteGroup = async (groupId) => {
+    if (!auth.currentUser) return
+
     try {
+      const invitesQuery = query(
+        collection(db, 'group_invites'),
+        where('groupId', '==', groupId)
+      )
+      const invitesSnapshot = await getDocs(invitesQuery)
+      const deleteInvitePromises = invitesSnapshot.docs.map(doc =>
+        deleteDoc(doc.ref)
+      )
+      await Promise.all(deleteInvitePromises)
+
       await deleteDoc(doc(db, 'practice_groups', groupId))
-      groups.value = groups.value.filter(g => g.id !== groupId)
+
+      const index = groups.value.findIndex(g => g.id === groupId)
+      if (index !== -1) {
+        groups.value.splice(index, 1)
+      }
     } catch (err) {
       console.error('Error deleting group:', err)
+      error.value = err.message
       throw err
     }
   }
@@ -382,20 +447,58 @@ export const useGroupStore = defineStore('groups', () => {
       return []
     }
   }
-
   const acceptInvite = async (inviteId, groupId) => {
-    const groupRef = doc(db, 'practice_groups', groupId)
-    await updateDoc(groupRef, {
-      members: arrayUnion(auth.currentUser.uid)
-    })
+    try {
+      console.log('Starting invite acceptance process...')
 
-    const inviteRef = doc(db, 'group_invites', inviteId)
-    await updateDoc(inviteRef, {
-      status: 'accepted',
-      updatedAt: serverTimestamp()
-    })
+      // Get current group data first
+      const groupRef = doc(db, 'practice_groups', groupId)
+      const groupSnap = await getDoc(groupRef)
 
-    await fetchGroups()
+      if (!groupSnap.exists()) {
+        throw new Error('Group not found')
+      }
+
+      const groupData = groupSnap.data()
+      const members = groupData.members || []
+
+      // Only add if not already a member
+      if (!members.includes(auth.currentUser.uid)) {
+        await updateDoc(groupRef, {
+          members: [...members, auth.currentUser.uid],
+          updatedAt: serverTimestamp()
+        })
+      }
+
+      // Update invite status
+      const inviteRef = doc(db, 'group_invites', inviteId)
+      await updateDoc(inviteRef, {
+        status: 'accepted',
+        updatedAt: serverTimestamp()
+      })
+
+      await fetchGroups()
+    } catch (error) {
+      console.error('Detailed error:', error)
+      throw error
+    }
+  }
+
+  const fetchPublicGroups = async () => {
+    try {
+      const q = query(
+        collection(db, 'practice_groups'),
+        where('isPublic', '==', true)
+      )
+      const snapshot = await getDocs(q)
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+    } catch (err) {
+      console.error('Error fetching public groups:', err)
+      throw err
+    }
   }
 
   return {
@@ -407,6 +510,7 @@ export const useGroupStore = defineStore('groups', () => {
     getGroupById,
     inviteMember,
     cancelInvite,
+    fetchPublicGroups,
     joinGroup,
     leaveGroup,
     deleteGroup,
