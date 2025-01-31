@@ -8,11 +8,13 @@ export function usePracticeTracking () {
   const startTime = ref(null)
   const interactions = ref(0)
   const currentTool = ref(null)
+  const practiceData = ref(null)
 
-  const startPractice = async (toolName) => {
+  const startPractice = async (toolName, additionalData = {}) => {
     startTime.value = new Date()
     interactions.value = 0
     currentTool.value = toolName
+    practiceData.value = additionalData
     await goalStore.fetchUserGoals()
   }
 
@@ -31,6 +33,11 @@ export function usePracticeTracking () {
         toolName: currentTool.value,
         duration,
         interactions: interactions.value,
+        date: new Date(),
+        notes: practiceData.value?.notes || additionalData?.notes,
+        fromRoutine: practiceData.value?.fromRoutine || false,
+        routineName: practiceData.value?.routineName,
+        rating: additionalData?.rating || 0,
         ...additionalData
       })
 
@@ -50,6 +57,7 @@ export function usePracticeTracking () {
       startTime.value = null
       interactions.value = 0
       currentTool.value = null
+      practiceData.value = null
 
       return true
     } catch (error) {
@@ -58,10 +66,22 @@ export function usePracticeTracking () {
     }
   }
 
+  const getCurrentPracticeDuration = () => {
+    if (!startTime.value) return 0
+    const now = new Date()
+    return Math.round((now - startTime.value) / 1000 / 60)
+  }
+
+  const isCurrentlyPracticing = () => {
+    return !!startTime.value
+  }
+
   return {
     startPractice,
     recordInteraction,
     endPractice,
+    getCurrentPracticeDuration,
+    isCurrentlyPracticing,
     currentTool,
     interactions
   }

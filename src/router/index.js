@@ -5,6 +5,7 @@ import ContactView from '../views/ContactView.vue'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import LeaderboardView from '../views/LeaderboardView.vue'
+import RoutinesView from '../views/RoutinesView.vue'
 let authReady = false
 
 auth.onAuthStateChanged(() => {
@@ -39,6 +40,12 @@ const routes = [
     path: '/leaderboard',
     name: 'leaderboard',
     component: LeaderboardView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/routines',
+    name: 'routines',
+    component: RoutinesView,
     meta: { requiresAuth: true }
   }
 ]
