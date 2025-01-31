@@ -47,6 +47,18 @@ const routes = [
     name: 'routines',
     component: RoutinesView,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/groups',
+    name: 'groups',
+    component: () => import('../views/GroupsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/groups/:groupId/practice/:sessionId',
+    name: 'group-practice',
+    component: () => import('../views/GroupPracticeView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

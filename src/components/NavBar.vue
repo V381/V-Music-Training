@@ -11,6 +11,7 @@
         <router-link to="/dashboard">Dashboard</router-link>
         <router-link to="/leaderboard">Leaderboard</router-link>
         <router-link to="/routines">Routines</router-link>
+        <router-link to="/groups">Groups</router-link>
         <router-link to="/contact">Contact</router-link>
         <a href="#" @click.prevent="handleLogout">Logout</a>
       </div>
@@ -30,6 +31,7 @@
         <router-link to="/dashboard" @click="isMenuOpen = false">Dashboard</router-link>
         <router-link to="/leaderboard" @click="isMenuOpen = false">Leaderboard</router-link>
         <router-link to="/routines">Routines</router-link>
+        <router-link to="/groups">Groups</router-link>
         <router-link to="/contact" @click="isMenuOpen = false">Contact</router-link>
         <a href="#" @click.prevent="handleLogoutMobile">Logout</a>
       </div>
