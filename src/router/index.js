@@ -49,6 +49,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/forum',
+    name: 'forum',
+    component: () => import('../views/ForumView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/forum/post/:id',
+    name: 'forum-post',
+    component: () => import('../views/ForumPostView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/groups',
     name: 'groups',
     component: () => import('../views/GroupsView.vue'),
