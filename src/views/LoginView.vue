@@ -27,7 +27,9 @@
       </div>
 
       <div class="login-card" v-if="!showRegionModal">
-        <h1><span class="v-letter">V</span>-Music Teacher</h1>
+        <img src="../assets/logo.png" alt="logo">
+        <br />
+        <h1><span class="v-letter"></span> Music Teacher</h1>
         <div class="login-buttons">
           <button @click="handleGoogleLogin" class="btn google-btn">
             <i class="fab fa-google"></i>
@@ -180,6 +182,11 @@ onMounted(() => {
   padding: 40px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  img {
+    width: 60px;
+    height: 60px;
+  }
 
   h1 {
     color: white;
