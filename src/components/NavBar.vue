@@ -2,7 +2,7 @@
   <nav class="main-nav" v-if="authStore.isAuthenticated">
     <div class="container">
       <router-link to="/" class="logo">
-        <span class="logo-text">Music Learning Tools</span>
+        <span class="logo-text"><img src="../assets/logo.png" alt="v-logo"></span>
       </router-link>
 
       <!-- Desktop Navigation -->
@@ -81,11 +81,15 @@ const handleLogoutMobile = async () => {
   }
 
   .logo {
-    font-size: 20px;
+    font-size: 5px;
     font-weight: bold;
     color: white;
     text-decoration: none;
     z-index: 1000;
+    img {
+      width: 50px;
+      height: 50px;
+    }
 
     &:hover {
       color: #c41e3a;
