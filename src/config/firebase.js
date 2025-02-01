@@ -18,35 +18,48 @@ const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 const db = getFirestore(app)
 
-let appCheck = null
-let appCheckInitialized = false
-
-// For development mode
+// Development debug token
 if (process.env.NODE_ENV === 'development') {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-}
-
-// Function to initialize App Check
-const initializeAppCheckAsync = async () => {
-  if (appCheckInitialized) return appCheck
-
-  return new Promise((resolve, reject) => {
-    try {
-      appCheck = initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_SITE_KEY),
-        isTokenAutoRefreshEnabled: true
-      })
-      appCheckInitialized = true
-      console.log('App Check initialized successfully')
-      resolve(appCheck)
-    } catch (error) {
-      console.error('App Check initialization error:', error)
-      reject(error)
-    }
-  })
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
 }
 
 // Initialize App Check
-initializeAppCheckAsync()
+let appCheckPromise = null
 
-export { app, auth, googleProvider, githubProvider, db, appCheck, initializeAppCheckAsync }
+const getAppCheck = async () => {
+  if (!appCheckPromise) {
+    appCheckPromise = new Promise((resolve) => {
+      const siteKey = process.env.VUE_APP_RECAPTCHA_SITE_KEY
+      if (!siteKey) {
+        console.error('Missing reCAPTCHA site key')
+        resolve(null)
+        return
+      }
+
+      try {
+        const appCheck = initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(siteKey),
+          isTokenAutoRefreshEnabled: true
+        })
+        console.log('App Check initialized successfully')
+        resolve(appCheck)
+      } catch (error) {
+        console.error('Error initializing App Check:', error)
+        resolve(null)
+      }
+    })
+  }
+  return appCheckPromise
+}
+
+// Initialize App Check
+getAppCheck()
+
+export {
+  app,
+  auth,
+  googleProvider,
+  githubProvider,
+  db,
+  getAppCheck
+}

@@ -50,7 +50,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider, githubProvider, db } from '../config/firebase'
+import { auth, googleProvider, githubProvider, db, getAppCheck } from '../config/firebase'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
@@ -74,6 +74,8 @@ const regions = [
 
 const handleGoogleLogin = async () => {
   try {
+    await getAppCheck()
+    console.log('<')
     const result = await signInWithPopup(auth, googleProvider)
     const userDoc = await getDoc(doc(db, 'users', result.user.uid))
 
