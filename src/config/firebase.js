@@ -13,38 +13,61 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
+
 const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 const db = getFirestore(app)
 
-// Debug token for development
-if (process.env.NODE_ENV === 'development') {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-}
-
 let appCheck = null
 
-// Initialize App Check after reCAPTCHA script loads
-const initAppCheck = () => {
-  if (!appCheck && process.env.VUE_APP_RECAPTCHA_SITE_KEY) {
-    try {
-      appCheck = initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_SITE_KEY),
-        isTokenAutoRefreshEnabled: true
-      })
-      console.log('App Check initialized successfully')
-    } catch (error) {
-      console.error('App Check initialization failed:', error)
+const initializeAppCheckWithRetry = async () => {
+  // Load reCAPTCHA script dynamically
+  const loadRecaptchaScript = () => {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.VUE_APP_RECAPTCHA_SITE_KEY}`
+      script.onload = resolve
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+  }
+
+  try {
+    if (process.env.NODE_ENV === 'development') {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
     }
+
+    if (!window.grecaptcha) {
+      await loadRecaptchaScript()
+    }
+
+    await new Promise((resolve) => {
+      if (window.grecaptcha && window.grecaptcha.ready) {
+        window.grecaptcha.ready(resolve)
+      } else {
+        window.onloadCallback = resolve
+      }
+    })
+
+    // Initialize App Check
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_SITE_KEY),
+      isTokenAutoRefreshEnabled: true
+    })
+
+    console.log('App Check initialized successfully')
+  } catch (error) {
+    console.error('App Check initialization error:', error)
+    setTimeout(initializeAppCheckWithRetry, 5000)
   }
 }
 
-// Wait for reCAPTCHA to load
+// Start initialization
 if (document.readyState === 'complete') {
-  initAppCheck()
+  initializeAppCheckWithRetry()
 } else {
-  window.addEventListener('load', initAppCheck)
+  window.addEventListener('load', initializeAppCheckWithRetry)
 }
 
 export { app, auth, googleProvider, githubProvider, db, appCheck }
