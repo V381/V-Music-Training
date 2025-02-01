@@ -13,61 +13,40 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
-
 const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
 const githubProvider = new GithubAuthProvider()
 const db = getFirestore(app)
 
 let appCheck = null
+let appCheckInitialized = false
 
-const initializeAppCheckWithRetry = async () => {
-  // Load reCAPTCHA script dynamically
-  const loadRecaptchaScript = () => {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.VUE_APP_RECAPTCHA_SITE_KEY}`
-      script.onload = resolve
-      script.onerror = reject
-      document.head.appendChild(script)
-    })
-  }
-
-  try {
-    if (process.env.NODE_ENV === 'development') {
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-    }
-
-    if (!window.grecaptcha) {
-      await loadRecaptchaScript()
-    }
-
-    await new Promise((resolve) => {
-      if (window.grecaptcha && window.grecaptcha.ready) {
-        window.grecaptcha.ready(resolve)
-      } else {
-        window.onloadCallback = resolve
-      }
-    })
-
-    // Initialize App Check
-    appCheck = initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_SITE_KEY),
-      isTokenAutoRefreshEnabled: true
-    })
-
-    console.log('App Check initialized successfully')
-  } catch (error) {
-    console.error('App Check initialization error:', error)
-    setTimeout(initializeAppCheckWithRetry, 5000)
-  }
+// For development mode
+if (process.env.NODE_ENV === 'development') {
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
 }
 
-// Start initialization
-if (document.readyState === 'complete') {
-  initializeAppCheckWithRetry()
-} else {
-  window.addEventListener('load', initializeAppCheckWithRetry)
+// Function to initialize App Check
+const initializeAppCheckAsync = async () => {
+  if (appCheckInitialized) return appCheck
+
+  return new Promise((resolve, reject) => {
+    try {
+      appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(process.env.VUE_APP_RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshEnabled: true
+      })
+      appCheckInitialized = true
+      console.log('App Check initialized successfully')
+      resolve(appCheck)
+    } catch (error) {
+      console.error('App Check initialization error:', error)
+      reject(error)
+    }
+  })
 }
 
-export { app, auth, googleProvider, githubProvider, db, appCheck }
+// Initialize App Check
+initializeAppCheckAsync()
+
+export { app, auth, googleProvider, githubProvider, db, appCheck, initializeAppCheckAsync }

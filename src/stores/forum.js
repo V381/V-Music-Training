@@ -14,6 +14,7 @@ import {
   increment,
   getDoc
 } from 'firebase/firestore'
+import { initializeAppCheck } from 'firebase/app-check'
 
 export const useForumStore = defineStore('forum', () => {
   const posts = ref([])
@@ -23,7 +24,7 @@ export const useForumStore = defineStore('forum', () => {
 
   const createPost = async (postData) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-
+    await initializeAppCheck()
     try {
       const post = {
         title: postData.title,
