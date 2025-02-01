@@ -6,6 +6,9 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import LeaderboardView from '../views/LeaderboardView.vue'
 import RoutinesView from '../views/RoutinesView.vue'
+import FollowingFeed from '@/components/FollowingFeed.vue'
+import UserProfile from '@/components/UserProfile.vue'
+import DiscoverView from '../views/DiscoverView.vue'
 let authReady = false
 
 auth.onAuthStateChanged(() => {
@@ -64,6 +67,30 @@ const routes = [
     path: '/groups',
     name: 'groups',
     component: () => import('../views/GroupsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/:userId',
+    name: 'userProfile',
+    component: UserProfile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/following',
+    name: 'following',
+    component: FollowingFeed,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/discover',
+    name: 'discover',
+    component: DiscoverView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/:id',
+    name: 'userProfile',
+    component: () => import('../components/UserProfile.vue'),
     meta: { requiresAuth: true }
   },
   {

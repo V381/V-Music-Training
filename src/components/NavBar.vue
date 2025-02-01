@@ -4,12 +4,14 @@
       <router-link to="/" class="logo">
         <span class="logo-text"><img src="../assets/logo.png" alt="v-logo"></span>
       </router-link>
+      <p class="discover nav-links desktop-nav"><router-link to="/discover"><span class="discover">Discover</span></router-link></p>
 
       <!-- Desktop Navigation -->
       <div class="nav-links desktop-nav">
         <router-link to="/">Tools</router-link>
         <router-link to="/dashboard">Dashboard</router-link>
         <router-link to="/leaderboard">Leaderboard</router-link>
+        <router-link to="/following">Following</router-link>
         <router-link to="/routines">Routines</router-link>
         <router-link to="/groups">Groups</router-link>
         <router-link to="/forum">Forum</router-link>
@@ -28,9 +30,11 @@
 
       <!-- Mobile Navigation Menu -->
       <div class="mobile-menu" :class="{ 'is-open': isMenuOpen }">
+        <p class="discover"><router-link to="/discover"><span class="discover">Discover</span></router-link></p>
         <router-link to="/" @click="isMenuOpen = false">Tools</router-link>
         <router-link to="/dashboard" @click="isMenuOpen = false">Dashboard</router-link>
         <router-link to="/leaderboard" @click="isMenuOpen = false">Leaderboard</router-link>
+        <router-link to="/following" @click="isMenuOpen = false">Following</router-link>
         <router-link to="/routines">Routines</router-link>
         <router-link to="/groups">Groups</router-link>
         <router-link to="/forum">Forum</router-link>
@@ -213,6 +217,14 @@ const handleLogoutMobile = async () => {
 @media (max-width: 768px) {
   .main-nav .container {
     padding: 0 15px;
+  }
+}
+
+.discover {
+  color: red;
+  font-size: 1.5rem;
+  a {
+    text-decoration: none;
   }
 }
 
