@@ -1,5 +1,5 @@
 <template>
-  <nav class="main-nav" v-if="authStore.isAuthenticated">
+  <nav class="main-nav" v-if="authStore.isAuthReady && authStore.isAuthenticated">
     <div class="container">
       <router-link to="/" class="logo">
         <span class="logo-text"><img src="../assets/logo.png" alt="v-logo"></span>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { auth } from '../config/firebase'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -69,6 +69,12 @@ const handleLogoutMobile = async () => {
   isMenuOpen.value = false
   await handleLogout()
 }
+
+watch(() => authStore.isAuthenticated, (newValue) => {
+  if (!newValue) {
+    router.push('/login')
+  }
+})
 </script>
 
 <style lang="scss" scoped>
