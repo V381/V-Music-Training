@@ -17,7 +17,6 @@
           <div class="achievement-icon">{{ achievement.icon }}</div>
           <h4>{{ achievement.title }}</h4>
           <p>{{ achievement.description }}</p>
-          <span class="points-value">+{{ achievement.points }} points</span>
         </div>
       </div>
     </div>
@@ -32,6 +31,7 @@ const rewardStore = useRewardStore()
 onMounted(async () => {
   await rewardStore.initializeRewards()
 })
+
 </script>
 
   <style lang="scss" scoped>
