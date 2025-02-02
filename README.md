@@ -96,14 +96,6 @@ npm install
 npm run serve
 ```
 
-## Technology Stack
-
-- Vue.js 3 (Composition API)
-- Firebase (Authentication & Firestore)
-- D3.js for data visualization
-- SCSS for styling
-- Pinia for state management
-
 ## Contributing
 
 We welcome contributions to improve V-Music Teacher! Please follow these steps:
