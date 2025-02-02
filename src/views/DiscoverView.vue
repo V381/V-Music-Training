@@ -42,13 +42,14 @@
                   class="user-avatar"
                 >
                 <div class="user-info">
-                  <h3>{{ user.displayName }}</h3>
-                  <p class="instruments">
-                    {{ user.instruments?.join(', ') || 'No instruments listed' }}
-                  </p>
-                  <p class="practice-time">
-                    {{ formatPracticeTime(user.totalPracticeTime) }} total practice
-                  </p>
+                    <h3>{{ user.displayName }}</h3>
+                    <!-- TODO: IMPLEMENT THIS -->
+                    <!-- <p class="instruments">
+                        {{ user.instruments?.length ? user.instruments.join(', ') : 'No instruments listed' }}
+                    </p>
+                    <p class="practice-time">
+                        {{ formatPracticeTime(user.totalPracticeTime) }} total practice
+                    </p> -->
                 </div>
                 <div class="user-actions">
                   <button
@@ -169,12 +170,13 @@ const visitProfile = (userId) => {
   router.push(`/profile/${userId}`)
 }
 
-const formatPracticeTime = (minutes) => {
-  if (!minutes) return '0 minutes'
-  if (minutes < 60) return `${minutes} minutes`
-  const hours = Math.floor(minutes / 60)
-  return `${hours} hours`
-}
+// const formatPracticeTime = (minutes) => {
+//   if (!minutes || isNaN(minutes)) return '0 minutes'
+//   if (minutes < 60) return `${minutes} minutes`
+//   const hours = Math.floor(minutes / 60)
+//   const remainingMinutes = minutes % 60
+//   return `${hours}h ${remainingMinutes}m`
+// }
 
 onMounted(() => {
   fetchUsers()

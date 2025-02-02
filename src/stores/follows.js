@@ -13,6 +13,7 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
+  serverTimestamp,
   doc,
   updateDoc,
   orderBy,
@@ -348,10 +349,25 @@ export const useFollowStore = defineStore('follows', () => {
       }
 
       const snapshot = await getDocs(usersQuery)
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+      const users = await Promise.all(snapshot.docs.map(async doc => {
+        const userData = doc.data()
+        // If stats are older than 1 hour or don't exist, recalculate
+        if (!userData.lastUpdated ||
+            (userData.lastUpdated.toDate() < new Date(Date.now() - 3600000))) {
+          const stats = await calculateUserStats(doc.id)
+          return {
+            id: doc.id,
+            ...userData,
+            ...stats
+          }
+        }
+        return {
+          id: doc.id,
+          ...userData
+        }
       }))
+
+      return users
     } catch (err) {
       console.error('Error fetching discoverable users:', err)
       throw err
@@ -373,6 +389,46 @@ export const useFollowStore = defineStore('follows', () => {
     }
   }
 
+  const calculateUserStats = async (userId) => {
+    try {
+      // Only calculate stats for the current user
+      if (userId !== auth.currentUser.uid) {
+        const userDoc = await getDoc(doc(db, 'users', userId))
+        return {
+          totalPracticeTime: userDoc.data()?.totalPracticeTime || 0,
+          instruments: userDoc.data()?.instruments || []
+        }
+      }
+
+      // Get all practice sessions for user
+      const practiceQuery = query(
+        collection(db, 'practice_sessions'),
+        where('userId', '==', userId)
+      )
+      const practiceSnapshot = await getDocs(practiceQuery)
+
+      // Calculate total practice time
+      const totalPracticeTime = practiceSnapshot.docs.reduce((total, doc) => {
+        return total + (doc.data().duration || 0)
+      }, 0)
+
+      // Get unique tools used (instruments)
+      const instruments = [...new Set(practiceSnapshot.docs.map(doc => doc.data().toolName))]
+
+      // Update user document with stats
+      await updateDoc(doc(db, 'users', userId), {
+        totalPracticeTime,
+        instruments,
+        lastUpdated: serverTimestamp()
+      })
+
+      return { totalPracticeTime, instruments }
+    } catch (err) {
+      console.error('Error calculating user stats:', err)
+      return { totalPracticeTime: 0, instruments: [] }
+    }
+  }
+
   return {
     following,
     followers,
@@ -380,6 +436,7 @@ export const useFollowStore = defineStore('follows', () => {
     followingActivity,
     isLoading,
     error,
+    calculateUserStats,
     followUser,
     unfollowUser,
     checkIfFollowing,

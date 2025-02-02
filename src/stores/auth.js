@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { auth, db } from '../config/firebase'
-import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
@@ -20,7 +20,10 @@ export const useAuthStore = defineStore('auth', () => {
           displayName: user.displayName || 'Anonymous',
           photoURL: user.photoURL || null,
           region: null,
-          createdAt: new Date()
+          createdAt: new Date(),
+          totalPracticeTime: 0,
+          instruments: [],
+          lastUpdated: serverTimestamp()
         })
       }
     } catch (error) {

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { db, auth } from '../config/firebase'
 import { collection, addDoc, query, where, getDocs, orderBy } from 'firebase/firestore'
+import calculateUserStats from '../stores/follows'
 
 export const usePracticeStore = defineStore('practice', () => {
   const practiceHistory = ref([])
@@ -24,6 +25,10 @@ export const usePracticeStore = defineStore('practice', () => {
         notes: sessionData.notes || '',
         completed: true
       })
+
+      // Update user stats
+      await calculateUserStats(auth.currentUser.uid)
+
       return docRef.id
     } catch (error) {
       console.error('Error adding practice session:', error)

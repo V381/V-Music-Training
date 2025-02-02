@@ -165,19 +165,31 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .user-profile {
-  padding: 30px;
+  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
 }
 
 .profile-header {
   display: flex;
-  gap: 30px;
-  margin-bottom: 40px;
+  gap: 20px;
+  margin-bottom: 30px;
   background: #18181B;
-  padding: 30px;
+  padding: 20px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    padding: 15px;
+  }
 }
 
 .profile-avatar {
@@ -185,41 +197,46 @@ onMounted(async () => {
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-}
 
-.profile-info {
-  flex: 1;
-
-  h1 {
-    color: white;
-    margin: 0 0 10px 0;
-    font-size: 24px;
-  }
-
-  .member-since {
-    color: #9CA3AF;
-    margin-bottom: 20px;
+  @media (max-width: 768px) {
+    width: 100px;
+    height: 100px;
   }
 }
 
 .profile-stats {
   display: flex;
   gap: 30px;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 
   .stat {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 80px;
 
     .stat-value {
       color: white;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 500;
+
+      @media (max-width: 768px) {
+        font-size: 18px;
+      }
     }
 
     .stat-label {
       color: #9CA3AF;
       font-size: 14px;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
     }
   }
 }
@@ -228,6 +245,12 @@ onMounted(async () => {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
 
   .tab-btn {
     padding: 8px 16px;
@@ -236,6 +259,13 @@ onMounted(async () => {
     color: #9CA3AF;
     cursor: pointer;
     border-radius: 6px;
+    white-space: nowrap;  // Prevent text wrapping
+    font-size: 14px;
+
+    @media (max-width: 768px) {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
 
     &.active {
       background: #c41e3a;
@@ -246,7 +276,7 @@ onMounted(async () => {
 
 .activity-item {
   background: #18181B;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -255,6 +285,12 @@ onMounted(async () => {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
+    flex-wrap: wrap;  // Allow wrapping on small screens
+    gap: 5px;
+
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
 
     .activity-type {
       color: #c41e3a;
@@ -269,11 +305,13 @@ onMounted(async () => {
   .activity-duration {
     color: white;
     margin-bottom: 5px;
+    font-size: 14px;
   }
 
   .activity-notes {
     color: #9CA3AF;
-    font-size: 14px;
+    font-size: 13px;
+    word-break: break-word;  // Handle long words
   }
 }
 
@@ -282,27 +320,77 @@ onMounted(async () => {
   align-items: center;
   gap: 15px;
   background: #18181B;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   margin-bottom: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 
+  @media (max-width: 768px) {
+    padding: 12px;
+    gap: 10px;
+  }
+
   i {
     font-size: 24px;
     color: #c41e3a;
+
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
   }
 
   .achievement-info {
     h3 {
       color: white;
       margin: 0 0 5px 0;
+      font-size: 16px;
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
     }
 
     p {
       color: #9CA3AF;
       margin: 0;
-      font-size: 14px;
+      font-size: 13px;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
     }
+  }
+}
+
+// Add loading and error states responsive styles
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 30px;
+  color: #9CA3AF;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+.profile-info {
+  flex: 1;
+
+  h1 {
+    color: white;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  .member-since {
+    color: #9CA3AF;
+    margin-bottom: 20px;
+    font-size: 14px;
   }
 }
 </style>
