@@ -32,7 +32,6 @@
           </textarea>
         </div>
 
-        <!-- Add Share Section Here -->
         <div class="share-section">
           <label>Share your progress:</label>
           <ShareButton
