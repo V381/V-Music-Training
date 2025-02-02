@@ -31,6 +31,16 @@
             rows="4">
           </textarea>
         </div>
+
+        <!-- Add Share Section Here -->
+        <div class="share-section">
+          <label>Share your progress:</label>
+          <ShareButton
+            :title="`Just practiced ${toolName} for ${getCurrentPracticeDuration()} minutes!`"
+            :description="notes || 'Making progress in my music journey'"
+            :url="shareUrl"
+          />
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -42,8 +52,9 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps } from 'vue'
-
+import ShareButton from './ShareButton.vue'
+import { ref, defineProps, defineEmits, computed } from 'vue'
+import { usePracticeTracking } from '../composables/userPracticeTracking'
 defineProps({
   show: {
     type: Boolean,
@@ -77,6 +88,16 @@ const resetForm = () => {
   rating.value = 0
   notes.value = ''
 }
+
+const { getCurrentPracticeDuration } = usePracticeTracking()
+
+const shareUrl = computed(() => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin + window.location.pathname
+  }
+  return ''
+})
+
 </script>
 
 <style lang="scss" scoped>
@@ -240,6 +261,18 @@ textarea {
     .btn {
       width: 100%;
     }
+  }
+}
+.share-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  label {
+    display: block;
+    color: #fff;
+    margin-bottom: 10px;
+    font-weight: 500;
   }
 }
 </style>

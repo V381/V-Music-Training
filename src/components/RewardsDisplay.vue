@@ -17,6 +17,11 @@
           <div class="achievement-icon">{{ achievement.icon }}</div>
           <h4>{{ achievement.title }}</h4>
           <p>{{ achievement.description }}</p>
+          <ShareButton
+            :title="`Just unlocked: ${achievement.title}`"
+            :description="achievement.description"
+            :url="shareUrl"
+          />
           <span class="points-value">+{{ achievement.points }} points</span>
         </div>
       </div>
@@ -24,13 +29,21 @@
   </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRewardStore } from '../stores/rewards'
+import ShareButton from './ShareButton'
 
 const rewardStore = useRewardStore()
 
 onMounted(async () => {
   await rewardStore.initializeRewards()
+})
+
+const shareUrl = computed(() => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin + window.location.pathname
+  }
+  return ''
 })
 </script>
 
