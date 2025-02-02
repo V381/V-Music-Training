@@ -32,11 +32,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const init = () => {
-    auth.onAuthStateChanged((user) => {
+    return auth.onAuthStateChanged((user) => {
       currentUser.value = user
       isAuthenticated.value = !!user
       isAuthReady.value = true
-
       if (user) {
         createUserDocument(user)
       }

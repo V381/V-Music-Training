@@ -111,6 +111,7 @@ router.beforeEach(async (to, from, next) => {
     await new Promise(resolve => {
       const unsubscribe = auth.onAuthStateChanged(() => {
         unsubscribe()
+        authReady = true
         resolve()
       })
     })
