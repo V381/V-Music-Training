@@ -2,21 +2,46 @@
 
 V-Music Teacher is a comprehensive web application designed to help users learn and practice music through interactive tools and structured practice tracking. Built with Vue.js and Firebase, it offers a suite of free online music learning tools along with features to track progress and set practice goals.
 
-## Features
+Features
+Core Learning Tools
 
-### 🎵 Learning Tools
-- **Note Learning Tool**: Interactive exercises for mastering sheet music reading
-- **Guitar Notes Guide**: Interactive fretboard training for memorizing guitar notes
-- **Simple Metronome**: Practice timing with an easy-to-use online metronome
-- **Ear Training**: Develop musical ear with interval, chord, and scale recognition exercises
-- **Piano Note Trainer**: Learn piano notes and keyboard positions through interactive exercises
+Note Learning Tool - Interactive exercises for reading sheet music
+Guitar Notes Guide - Interactive fretboard training
+Simple Metronome - Practice timing and rhythm
+Ear Training - Develop musical ear through exercises
+Piano Note Trainer - Learn piano notes and keyboard positions
 
-### 📊 Progress Tracking
-- Personal practice dashboard
-- Detailed practice history
-- Visual analytics and progress charts
-- Custom practice goals with daily/weekly targets
-- Session rating and note-taking system
+Practice Management
+
+Create custom practice routines
+Track practice sessions and progress
+Set and monitor learning goals
+Daily challenges and achievements
+Performance statistics and insights
+
+Social Features
+
+Follow other musicians
+Activity feed showing practice sessions and achievements
+Join practice groups
+Share routines with the community
+Real-time group practice sessions
+
+User Experience
+
+Responsive design for all devices
+Dark theme optimized for musicians
+Intuitive navigation
+Progress visualization
+Real-time notifications
+
+Technical Stack
+
+Frontend: Vue.js 3 with Composition API
+State Management: Pinia
+Styling: SCSS with modular architecture
+Backend: Firebase (Authentication, Firestore, Cloud Functions)
+Real-time Updates: Firebase Real-time Database
 
 ## Getting Started
 
