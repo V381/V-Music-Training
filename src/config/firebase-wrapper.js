@@ -1,8 +1,8 @@
+import { getToken } from 'firebase/app-check'
 import { getAppCheck } from '../config/firebase'
 
 export const withAppCheck = async (operation) => {
   try {
-    // Get AppCheck instance
     const appCheck = await getAppCheck()
 
     if (!appCheck) {
@@ -10,18 +10,15 @@ export const withAppCheck = async (operation) => {
       return await operation()
     }
 
-    // Wait for token refresh
+    // Use getToken function from firebase/app-check
     try {
-      await appCheck.getToken(true)
+      await getToken(appCheck, /* forceRefresh */ true)
     } catch (tokenError) {
       console.warn('Failed to get AppCheck token:', tokenError)
-      // Proceed with operation even if token refresh fails
     }
 
-    // Execute the operation
     return await operation()
   } catch (error) {
-    // If it's an AppCheck-related error, log it specially
     if (error.message?.includes('NS BINDING ABORTED')) {
       console.error('reCAPTCHA initialization failed:', error)
     } else {

@@ -25,7 +25,6 @@ if (process.env.NODE_ENV === 'development') {
 
 // Initialize App Check
 let appCheckPromise = null
-
 const getAppCheck = async () => {
   if (!appCheckPromise) {
     appCheckPromise = new Promise((resolve) => {
@@ -35,13 +34,12 @@ const getAppCheck = async () => {
         resolve(null)
         return
       }
-
       try {
         const appCheck = initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(siteKey),
           isTokenAutoRefreshEnabled: true
         })
-        console.log('App Check initialized successfully')
+        // Return the AppCheck instance directly
         resolve(appCheck)
       } catch (error) {
         console.error('Error initializing App Check:', error)
@@ -49,7 +47,8 @@ const getAppCheck = async () => {
       }
     })
   }
-  return appCheckPromise
+  // Return the resolved Promise value
+  return await appCheckPromise
 }
 
 // Initialize App Check
