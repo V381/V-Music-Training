@@ -19,9 +19,9 @@ const githubProvider = new GithubAuthProvider()
 const db = getFirestore(app)
 
 // Development debug token
-if (process.env.NODE_ENV === 'development') {
-  window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-}
+// if (process.env.NODE_ENV === 'development') {
+//   window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+// }
 
 // Initialize App Check
 let appCheckPromise = null
