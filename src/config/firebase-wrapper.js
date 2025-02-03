@@ -6,24 +6,40 @@ export const withAppCheck = async (operation) => {
     const appCheck = await getAppCheck()
 
     if (!appCheck) {
-      console.warn('AppCheck not available, proceeding without verification')
-      return await operation()
+      console.error('AppCheck initialization failed')
+      throw new Error('AppCheck initialization failed')
     }
 
-    // Use getToken function from firebase/app-check
+    let token
     try {
-      await getToken(appCheck, /* forceRefresh */ true)
+      // Get token with force refresh
+      token = await getToken(appCheck, true)
+      console.log('Successfully obtained AppCheck token:',
+        token ? 'Token present' : 'No token')
     } catch (tokenError) {
-      console.warn('Failed to get AppCheck token:', tokenError)
+      console.error('Token error:', tokenError)
+      throw tokenError
     }
 
-    return await operation()
-  } catch (error) {
-    if (error.message?.includes('NS BINDING ABORTED')) {
-      console.error('reCAPTCHA initialization failed:', error)
-    } else {
-      console.error('Operation failed:', error)
+    if (!token) {
+      console.error('No token obtained from AppCheck')
+      throw new Error('No AppCheck token available')
     }
+
+    // Execute operation with token available
+    const result = await operation()
+    return result
+  } catch (error) {
+    console.error('Operation failed:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    })
+
+    if (error.message?.includes('Missing or insufficient permissions')) {
+      console.error('Permission denied. Verify security rules and token.')
+    }
+
     throw error
   }
 }
