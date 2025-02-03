@@ -1,7 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { db, auth } from '../config/firebase'
-import { enhancedDb } from '../utils/db'
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  doc,
+  updateDoc,
+  deleteDoc,
+  increment,
+  getDoc
+} from 'firebase/firestore'
+import { withAppCheck } from '@/config/firebase-wrapper'
 
 export const useForumStore = defineStore('forum', () => {
   const posts = ref([])
@@ -12,7 +25,7 @@ export const useForumStore = defineStore('forum', () => {
   const createPost = async (postData) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
 
-    try {
+    return withAppCheck(async () => {
       const post = {
         title: postData.title,
         content: postData.content,
@@ -26,12 +39,9 @@ export const useForumStore = defineStore('forum', () => {
         userPhotoURL: auth.currentUser.photoURL || null
       }
 
-      const docRef = await enhancedDb.addDoc(enhancedDb.collection(db, 'forum_posts'), post)
+      const docRef = await addDoc(collection(db, 'forum_posts'), post)
       return docRef.id
-    } catch (err) {
-      console.error('Error creating post:', err)
-      throw err
-    }
+    })
   }
 
   const fetchPosts = async (filters = {}) => {
@@ -39,19 +49,19 @@ export const useForumStore = defineStore('forum', () => {
     error.value = null
 
     try {
-      let q = enhancedDb.collection(db, 'forum_posts')
+      let q = collection(db, 'forum_posts')
 
       if (filters.tag) {
-        q = enhancedDb.query(q, enhancedDb.where('tags', 'array-contains', filters.tag))
+        q = query(q, where('tags', 'array-contains', filters.tag))
       }
 
       if (filters.userId) {
-        q = enhancedDb.query(q, enhancedDb.where('userId', '==', filters.userId))
+        q = query(q, where('userId', '==', filters.userId))
       }
 
-      q = enhancedDb.query(q, enhancedDb.orderBy('createdAt', 'desc'))
+      q = query(q, orderBy('createdAt', 'desc'))
 
-      const snapshot = await enhancedDb.getDocs(q)
+      const snapshot = await getDocs(q)
       posts.value = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -70,7 +80,8 @@ export const useForumStore = defineStore('forum', () => {
 
   const addComment = async (postId, commentData) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-    try {
+
+    return withAppCheck(async () => {
       const comment = {
         content: commentData.content,
         userId: auth.currentUser.uid,
@@ -80,10 +91,11 @@ export const useForumStore = defineStore('forum', () => {
         userPhotoURL: auth.currentUser.photoURL || null
       }
 
-      await enhancedDb.addDoc(enhancedDb.collection(db, 'forum_comments'), comment)
-      const postRef = enhancedDb.doc(db, 'forum_posts', postId)
-      await enhancedDb.updateDoc(postRef, {
-        comments: enhancedDb.increment(1)
+      const commentRef = await addDoc(collection(db, 'forum_comments'), comment)
+
+      const postRef = doc(db, 'forum_posts', postId)
+      await updateDoc(postRef, {
+        comments: increment(1)
       })
 
       // Update local post data
@@ -91,20 +103,20 @@ export const useForumStore = defineStore('forum', () => {
       if (postIndex !== -1) {
         posts.value[postIndex].comments++
       }
-    } catch (err) {
-      console.error('Error adding comment:', err)
-      throw err
-    }
+
+      return commentRef.id
+    })
   }
 
   const fetchComments = async (postId) => {
     try {
-      const q = enhancedDb.query(
-        enhancedDb.collection(db, 'forum_comments'),
-        enhancedDb.where('postId', '==', postId),
-        enhancedDb.orderBy('createdAt', 'asc')
+      const q = query(
+        collection(db, 'forum_comments'),
+        where('postId', '==', postId),
+        orderBy('createdAt', 'asc')
       )
-      const snapshot = await enhancedDb.getDocs(q)
+
+      const snapshot = await getDocs(q)
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -118,37 +130,41 @@ export const useForumStore = defineStore('forum', () => {
 
   const deletePost = async (postId) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-    try {
-      const postRef = enhancedDb.doc(db, 'forum_posts', postId)
-      const postDoc = await enhancedDb.getDoc(postRef)
+
+    return withAppCheck(async () => {
+      const postRef = doc(db, 'forum_posts', postId)
+      const postDoc = await getDoc(postRef)
+
       if (postDoc.data().userId !== auth.currentUser.uid) {
         throw new Error('Not authorized to delete this post')
       }
-      await enhancedDb.deleteDoc(postRef)
+
+      await deleteDoc(postRef)
       posts.value = posts.value.filter(p => p.id !== postId)
-    } catch (err) {
-      console.error('Error deleting post:', err)
-      throw err
-    }
+    })
   }
 
   const deleteComment = async (commentId) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-    try {
-      const commentRef = enhancedDb.doc(db, 'forum_comments', commentId)
-      const commentDoc = await enhancedDb.getDoc(commentRef)
+
+    return withAppCheck(async () => {
+      const commentRef = doc(db, 'forum_comments', commentId)
+      const commentDoc = await getDoc(commentRef)
+
       if (!commentDoc.exists()) {
         throw new Error('Comment not found')
       }
+
       if (commentDoc.data().userId !== auth.currentUser.uid) {
         throw new Error('Not authorized to delete this comment')
       }
-      await enhancedDb.deleteDoc(commentRef)
+
+      await deleteDoc(commentRef)
 
       const postId = commentDoc.data().postId
-      const postRef = enhancedDb.doc(db, 'forum_posts', postId)
-      await enhancedDb.updateDoc(postRef, {
-        comments: enhancedDb.increment(-1)
+      const postRef = doc(db, 'forum_posts', postId)
+      await updateDoc(postRef, {
+        comments: increment(-1)
       })
 
       // Update local post data
@@ -156,20 +172,18 @@ export const useForumStore = defineStore('forum', () => {
       if (postIndex !== -1) {
         posts.value[postIndex].comments--
       }
-    } catch (err) {
-      console.error('Error deleting comment:', err)
-      throw err
-    }
+    })
   }
 
   const fetchUserLikes = async () => {
     if (!auth.currentUser) return
+
     try {
-      const q = enhancedDb.query(
-        enhancedDb.collection(db, 'post_likes'),
-        enhancedDb.where('userId', '==', auth.currentUser.uid)
+      const q = query(
+        collection(db, 'post_likes'),
+        where('userId', '==', auth.currentUser.uid)
       )
-      const snapshot = await enhancedDb.getDocs(q)
+      const snapshot = await getDocs(q)
       userLikes.value.clear()
       snapshot.docs.forEach(doc => {
         userLikes.value.set(doc.data().postId, doc.id)
@@ -185,25 +199,26 @@ export const useForumStore = defineStore('forum', () => {
 
   const likePost = async (postId) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-    try {
+
+    return withAppCheck(async () => {
       const isLiked = userLikes.value.has(postId)
-      const postRef = enhancedDb.doc(db, 'forum_posts', postId)
+      const postRef = doc(db, 'forum_posts', postId)
 
       if (isLiked) {
         // Remove like
         const likeId = userLikes.value.get(postId)
-        await enhancedDb.deleteDoc(enhancedDb.doc(db, 'post_likes', likeId))
+        await deleteDoc(doc(db, 'post_likes', likeId))
         userLikes.value.delete(postId)
-        await enhancedDb.updateDoc(postRef, { likes: enhancedDb.increment(-1) })
+        await updateDoc(postRef, { likes: increment(-1) })
       } else {
         // Add like
-        const likeDoc = await enhancedDb.addDoc(enhancedDb.collection(db, 'post_likes'), {
+        const likeDoc = await addDoc(collection(db, 'post_likes'), {
           postId,
           userId: auth.currentUser.uid,
           createdAt: new Date()
         })
         userLikes.value.set(postId, likeDoc.id)
-        await enhancedDb.updateDoc(postRef, { likes: enhancedDb.increment(1) })
+        await updateDoc(postRef, { likes: increment(1) })
       }
 
       // Update local post data
@@ -211,10 +226,7 @@ export const useForumStore = defineStore('forum', () => {
       if (postIndex !== -1) {
         posts.value[postIndex].likes += isLiked ? -1 : 1
       }
-    } catch (err) {
-      console.error('Error toggling like:', err)
-      throw err
-    }
+    })
   }
 
   return {
