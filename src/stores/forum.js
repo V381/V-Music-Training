@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { db, auth } from '../config/firebase'
+import { db, auth, ensureAppCheckToken } from '../config/firebase'
 import {
   collection,
   addDoc,
@@ -80,7 +80,7 @@ export const useForumStore = defineStore('forum', () => {
 
   const addComment = async (postId, commentData) => {
     if (!auth.currentUser) throw new Error('Must be logged in')
-
+    await ensureAppCheckToken()
     return withAppCheck(async () => {
       const comment = {
         content: commentData.content,
