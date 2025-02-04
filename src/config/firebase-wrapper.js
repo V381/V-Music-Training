@@ -14,8 +14,8 @@ export const withAppCheck = async (operation) => {
     try {
       setTimeout(async () => {
         token = await getToken(appCheck, true)
+        console.log('App Check Token:', token || 'No token')
       }, 100)
-      console.log('App Check Token:', token.token || 'No token')
     } catch (tokenError) {
       console.error('Token error:', tokenError)
       throw tokenError
