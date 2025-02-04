@@ -57,7 +57,6 @@ const ensureAppCheckToken = async () => {
 
   try {
     const token = await getToken(appCheck, true) // Force refresh token
-    console.log('🔥 App Check Token:', token.token || 'No token')
     return token.token
   } catch (error) {
     console.error('🚨 Failed to get App Check token:', error)
