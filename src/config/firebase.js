@@ -12,8 +12,6 @@ const firebaseConfig = {
   appId: process.env.VUE_APP_FIREBASE_APP_ID
 }
 
-console.log(process.env, 'DEBUG DEBUG DEBUG')
-
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
@@ -37,11 +35,13 @@ const getAppCheck = async () => {
         return
       }
       try {
+        console.log('Initializing App Check with site key:', siteKey)
+
         const appCheck = initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(siteKey),
           isTokenAutoRefreshEnabled: true
         })
-        // Return the AppCheck instance directly
+
         resolve(appCheck)
       } catch (error) {
         console.error('Error initializing App Check:', error)
@@ -49,7 +49,6 @@ const getAppCheck = async () => {
       }
     })
   }
-  // Return the resolved Promise value
   return await appCheckPromise
 }
 
