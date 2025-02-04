@@ -5,6 +5,7 @@ export const withAppCheck = async (operation) => {
   try {
     const appCheck = await getAppCheck()
 
+    console.log(appCheck)
     if (!appCheck) {
       console.error('AppCheck initialization failed')
       throw new Error('AppCheck initialization failed')
@@ -12,10 +13,8 @@ export const withAppCheck = async (operation) => {
 
     let token
     try {
-      setTimeout(async () => {
-        token = await getToken(appCheck, true)
-        console.log('App Check Token:', token || 'No token')
-      }, 100)
+      token = await getToken(appCheck, true)
+      console.log('App Check Token:', token || 'No token')
     } catch (tokenError) {
       console.error('Token error:', tokenError)
       throw tokenError
