@@ -25,11 +25,10 @@ const db = getFirestore(app)
 
 // Initialize App Check
 let appCheckPromise = null
-let siteKey
+const siteKey = process.env.VUE_APP_RECAPTCHA_SITE_KEY
 const getAppCheck = async () => {
   if (!appCheckPromise) {
     appCheckPromise = new Promise((resolve) => {
-      siteKey = process.env.VUE_APP_RECAPTCHA_SITE_KEY
       if (!siteKey) {
         console.error('Missing reCAPTCHA site key')
         resolve(null)
