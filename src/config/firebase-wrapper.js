@@ -1,4 +1,5 @@
-import { getAppCheck, siteKey } from '../config/firebase'
+import { getAppCheck } from '../config/firebase'
+import { getToken } from 'firebase/app-check'
 
 export const withAppCheck = async (operation) => {
   try {
@@ -11,34 +12,23 @@ export const withAppCheck = async (operation) => {
 
     let token
     try {
-      // Get token with force refresh
-      token = siteKey
-      console.log('Successfully obtained AppCheck token:',
-        token ? 'Token present' : 'No token')
+      setTimeout(async () => {
+        token = await getToken(appCheck, true)
+      }, 100)
+      console.log('App Check Token:', token.token || 'No token')
     } catch (tokenError) {
       console.error('Token error:', tokenError)
       throw tokenError
     }
 
-    if (!token) {
-      console.error('No token obtained from AppCheck')
+    if (!token || !token.token) {
+      console.error('No AppCheck token obtained')
       throw new Error('No AppCheck token available')
     }
 
-    // Execute operation with token available
-    const result = await operation()
-    return result
+    return await operation()
   } catch (error) {
-    console.error('Operation failed:', {
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    })
-
-    if (error.message?.includes('Missing or insufficient permissions')) {
-      console.error('Permission denied. Verify security rules and token.')
-    }
-
+    console.error('Operation failed:', error)
     throw error
   }
 }
