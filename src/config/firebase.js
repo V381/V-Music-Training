@@ -12,6 +12,8 @@ const firebaseConfig = {
   appId: process.env.VUE_APP_FIREBASE_APP_ID
 }
 
+console.log(process.env, 'DEBUG DEBUG DEBUG')
+
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider()
