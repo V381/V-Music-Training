@@ -14,6 +14,7 @@ export const withAppCheck = async (operation) => {
     try {
       // Get token with force refresh
       token = await getToken(appCheck, true)
+      console.log(appCheck)
       console.log('Successfully obtained AppCheck token:',
         token ? 'Token present' : 'No token')
     } catch (tokenError) {
