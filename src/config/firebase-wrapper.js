@@ -4,8 +4,6 @@ import { getToken } from 'firebase/app-check'
 export const withAppCheck = async (operation) => {
   try {
     const appCheck = await getAppCheck()
-
-    console.log(appCheck)
     if (!appCheck) {
       console.error('AppCheck initialization failed')
       throw new Error('AppCheck initialization failed')

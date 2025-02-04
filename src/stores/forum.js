@@ -91,6 +91,8 @@ export const useForumStore = defineStore('forum', () => {
         userPhotoURL: auth.currentUser.photoURL || null
       }
 
+      console.log('🔥 Writing Comment:', comment)
+
       const commentRef = await addDoc(collection(db, 'forum_comments'), comment)
 
       const postRef = doc(db, 'forum_posts', postId)
