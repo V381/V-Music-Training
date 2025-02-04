@@ -1,5 +1,4 @@
-import { getToken } from 'firebase/app-check'
-import { getAppCheck } from '../config/firebase'
+import { getAppCheck, siteKey } from '../config/firebase'
 
 export const withAppCheck = async (operation) => {
   try {
@@ -13,8 +12,7 @@ export const withAppCheck = async (operation) => {
     let token
     try {
       // Get token with force refresh
-      token = await getToken(appCheck, true)
-      console.log(appCheck)
+      token = siteKey
       console.log('Successfully obtained AppCheck token:',
         token ? 'Token present' : 'No token')
     } catch (tokenError) {

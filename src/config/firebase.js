@@ -25,18 +25,17 @@ const db = getFirestore(app)
 
 // Initialize App Check
 let appCheckPromise = null
+let siteKey
 const getAppCheck = async () => {
   if (!appCheckPromise) {
     appCheckPromise = new Promise((resolve) => {
-      const siteKey = process.env.VUE_APP_RECAPTCHA_SITE_KEY
+      siteKey = process.env.VUE_APP_RECAPTCHA_SITE_KEY
       if (!siteKey) {
         console.error('Missing reCAPTCHA site key')
         resolve(null)
         return
       }
       try {
-        console.log('Initializing App Check with site key:', siteKey)
-
         const appCheck = initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(siteKey),
           isTokenAutoRefreshEnabled: true
@@ -61,5 +60,6 @@ export {
   googleProvider,
   githubProvider,
   db,
-  getAppCheck
+  getAppCheck,
+  siteKey
 }
